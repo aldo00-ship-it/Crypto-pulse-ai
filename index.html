@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Pulse AI Terminal Pro - Ultimate Edition V10</title>
-    <!-- Tailwind CSS -->
+    <title>Crypto Pulse AI Terminal Pro - Ultimate Edition V12</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- TradingView Widget Script -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <!-- PWA Manifest link -->
     <link rel="manifest" href="manifest.json">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -20,54 +17,67 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen custom-scrollbar flex flex-col justify-between selection:bg-emerald-500 selection:text-black">
 
-    <!-- MODAL D'ACCÈS SÉCURISÉ (BIOMÉTRIE + INVITATIONS) -->
+    <!-- MODAL DE CONNEXION DYNAMIQUE -->
     <div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 max-w-md w-full shadow-2xl space-y-6">
-            <div class="text-center space-y-2">
-                <div class="inline-block p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-400 text-3xl mb-2">🛡️</div>
-                <h2 class="text-2xl font-extrabold text-white tracking-tight">Accès Sécurisé Crypto Pulse</h2>
-                <p class="text-sm text-slate-400">Réservé au Concepteur (Biométrie) ou aux Invités (Jeton 24h).</p>
-            </div>
             
-            <div class="space-y-4">
-                <!-- BOUTON ACCÈS MAÎTRE PAR EMPREINTE / BIOMÉTRIE -->
-                <button onclick="handleBiometricLogin()" class="w-full py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black rounded-xl transition shadow-xl flex items-center justify-center space-x-2 text-sm">
-                    <span>👆</span>
-                    <span>Déverrouiller par Empreinte / Visage</span>
-                </button>
-
-                <div class="relative flex py-2 items-center">
-                    <div class="flex-grow border-t border-slate-800"></div>
-                    <span class="flex-shrink mx-4 text-slate-500 text-[10px] uppercase tracking-widest">Ou Espace Invité</span>
-                    <div class="flex-grow border-t border-slate-800"></div>
+            <!-- VUE 1 : CRÉATION DU COMPTE MAÎTRE (SI PREMIÈRE FOIS) -->
+            <div id="master-setup-view" class="space-y-4 hidden">
+                <div class="text-center space-y-2">
+                    <div class="inline-block p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-400 text-2xl mb-1">⚙️</div>
+                    <h2 class="text-xl font-extrabold text-white">Configuration du Concepteur</h2>
+                    <p class="text-xs text-slate-400">Définis ton e-mail et ton mot de passe maître personnels.</p>
                 </div>
-
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Jeton d'Invitation Invité</label>
-                    <input type="text" id="invite-token-input" placeholder="Entre ton jeton unique..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-semibold uppercase text-slate-400 mb-1">Ton E-mail Maître</label>
+                        <input type="email" id="setup-master-email" placeholder="ton.email@gmail.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold uppercase text-slate-400 mb-1">Ton Mot de Passe Maître</label>
+                        <input type="password" id="setup-master-pass" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <button onclick="saveMasterAccount()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition shadow-lg">
+                        Enregistrer et Activer mon Compte
+                    </button>
                 </div>
-                <button onclick="handleGuestLogin()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl transition text-xs">
-                    Entrer avec le Jeton Invité
-                </button>
-                <div id="auth-error" class="text-xs text-red-400 text-center font-medium hidden"></div>
             </div>
-            <div class="text-center pt-2 border-t border-slate-800/60 text-xs text-slate-500">
-                Sécurité Biométrique Native Active
+
+            <!-- VUE 2 : CONNEXION CLASSIQUE (CONCEPTEUR OU INVITÉ) -->
+            <div id="master-login-view" class="space-y-5">
+                <div class="text-center space-y-2">
+                    <div class="inline-block p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-400 text-2xl mb-1">🔐</div>
+                    <h2 class="text-xl font-extrabold text-white">Connexion au Terminal</h2>
+                    <p class="text-xs text-slate-400">Connecte-toi avec tes identifiants ou utilise ton jeton invité.</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-semibold uppercase text-slate-400 mb-1">E-mail ou Jeton d'Invitation</label>
+                        <input type="text" id="login-identifier" placeholder="Email maître ou jeton 24h..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold uppercase text-slate-400 mb-1">Mot de passe (si Concepteur)</label>
+                        <input type="password" id="login-password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <button onclick="handleUniversalLogin()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition shadow-lg">
+                        Se Connecter
+                    </button>
+                    <div id="auth-error" class="text-xs text-red-400 text-center font-medium hidden"></div>
+                </div>
             </div>
+
         </div>
     </div>
 
     <!-- MAIN APP CONTAINER -->
     <div id="main-app" class="flex-1 flex flex-col">
-        <!-- HEADER AVEC MENU DÉROULANT -->
         <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-40 px-6 py-3.5 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <div class="p-2 bg-gradient-to-tr from-emerald-500 to-cyan-500 rounded-xl text-slate-950 font-black text-lg">⚡</div>
-                <div>
-                    <h1 class="text-base font-black tracking-wider bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                        CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">V10 PRO</span>
-                    </h1>
-                </div>
+                <h1 class="text-base font-black tracking-wider bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+                    CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">V12 PRO</span>
+                </h1>
             </div>
 
             <!-- MENU DÉROULANT -->
@@ -77,7 +87,6 @@
                     <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
 
-                <!-- Dropdown Menu Box -->
                 <div id="nav-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl py-2 z-50 text-xs space-y-1">
                     <button onclick="switchTab('tracker'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 transition flex items-center space-x-2"><span>📊</span><span>Tracker Top 150</span></button>
                     <button onclick="switchTab('chart'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 transition flex items-center space-x-2"><span>📈</span><span>Workspace Graphique</span></button>
@@ -89,15 +98,13 @@
                     <button onclick="switchTab('journal'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 transition flex items-center space-x-2"><span>📓</span><span>Journal de Trade</span></button>
                     <button onclick="switchTab('sentiment'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 transition flex items-center space-x-2"><span>⚡</span><span>News & Whales</span></button>
                     <button onclick="switchTab('chat'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 transition flex items-center space-x-2"><span>🤖</span><span>GemCrypt AI Chat</span></button>
-                    <button onclick="switchTab('admin-invites'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-emerald-400 transition flex items-center space-x-2 border-t border-slate-800"><span>✉️</span><span>Générer des Invitations (24h)</span></button>
+                    <button onclick="switchTab('admin-invites'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-emerald-400 transition flex items-center space-x-2 border-t border-slate-800"><span>✉️</span><span>Générer Invitation (24h)</span></button>
                     <button onclick="handleSignOut()" class="w-full text-left px-4 py-2.5 hover:bg-red-500/10 text-red-400 transition flex items-center space-x-2 border-t border-slate-800"><span>🚪</span><span>Déconnexion</span></button>
                 </div>
             </div>
         </header>
 
-        <!-- CONTENT AREA -->
         <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
-            <!-- TAB 1: TRACKER -->
             <section id="tab-tracker" class="space-y-4">
                 <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex justify-between items-center">
                     <input type="text" id="tracker-search" oninput="filterTracker()" placeholder="Rechercher..." class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white w-72 focus:outline-none">
@@ -111,7 +118,6 @@
                 </div>
             </section>
 
-            <!-- TAB 2: CHART -->
             <section id="tab-chart" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
                     <select id="chart-symbol-select" onchange="updateTradingViewChart()" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-emerald-400 font-bold">
@@ -122,18 +128,68 @@
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-2 h-[600px]" id="tradingview-container"></div>
             </section>
 
-            <!-- TAB 3 à 10 (Structure allégée pour performance) -->
-            <section id="tab-pepites" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">Ondo & Render (Pépites du jour)</div></section>
-            <section id="tab-analyzer" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">Analyseur 360° Actif</div></section>
-            <section id="tab-live-tracking" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">Suivi Live Actif</div></section>
-            <section id="tab-correlation" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">Corrélation BTC Active</div></section>
-            <section id="tab-calculator" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">Gestion Risque Active</div></section>
-            <section id="tab-journal" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">Journal de Trade Actif</div></section>
-            <section id="tab-sentiment" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">News & Whales Actif</div></section>
-            <section id="tab-chat" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">GemCrypt AI Chat Actif</div></section>
+            <!-- Autres sections allégées -->
+            <section id="tab-pepites" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">Pépites du jour</div></section>
+            <section id="tab-analyzer" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">Analyseur 360°</div></section>
+            <section id="tab-live-tracking" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">Suivi Live</div></section>
+            <section id="tab-correlation" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">Corrélation BTC</div></section>
+            <section id="tab-calculator" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">Gestion Risque</div></section>
+            <section id="tab-journal" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">Journal de Trade</div></section>
+            <section id="tab-sentiment" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">News & Whales</div></section>
+            <section id="tab-chat" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs">GemCrypt AI Chat</div></section>
 
-            <!-- TAB 11: ADMIN INVITATIONS -->
+            <!-- GESTION DES INVITATIONS INVITÉS -->
             <section id="tab-admin-invites" class="space-y-6 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                    <h2 class="text-xl font-bold text-white">✉️ Générateur de Jetons d'Invitation (24h)</h2>
-                    
+                    <h2 class="text-xl font-bold text-white">✉️ Envoyer une Invitation Invité (24h)</h2>
+                    <p class="text-xs text-slate-400">Entre l'e-mail de la personne pour générer son jeton unique d'accès de 24h.</p>
+                    <div class="flex gap-3">
+                        <input type="email" id="invite-email-target" placeholder="ami.invite@gmail.com" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white">
+                        <button onclick="generateAndSendInvite()" class="px-6 py-3 bg-cyan-500 text-slate-950 font-bold rounded-xl text-sm">Générer le Jeton</button>
+                    </div>
+                    <div id="invite-result-box" class="p-4 bg-slate-950 rounded-xl border border-slate-800 hidden space-y-2 text-xs">
+                        <span class="text-emerald-400 font-bold">Jeton généré pour l'invité :</span>
+                        <input type="text" id="generated-link-display" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-cyan-300 font-mono">
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="bg-slate-900/50 border-t border-slate-800/80 py-4 text-center text-xs text-slate-500">
+            Crypto Pulse AI Terminal Pro — Gestion Maître & Invités
+        </footer>
+    </div>
+
+    <script>
+        let globalCryptos = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const masterConfig = localStorage.getItem('crypto_master_account');
+            const activeSession = localStorage.getItem('crypto_active_session');
+
+            if (!masterConfig) {
+                // Si le compte maître n'a jamais été créé, afficher la vue de configuration
+                document.getElementById('master-setup-view').classList.remove('hidden');
+                document.getElementById('master-login-view').classList.add('hidden');
+            } else if (activeSession) {
+                // Si une session est déjà active
+                document.getElementById('auth-modal').classList.add('hidden');
+            }
+
+            loadTopCryptos();
+            initTradingViewWidget("BINANCE:BTCUSDT");
+            setInterval(loadTopCryptos, 30000);
+        });
+
+        function toggleNavDropdown() {
+            document.getElementById('nav-dropdown-menu').classList.toggle('hidden');
+        }
+        function closeDropdown() {
+            document.getElementById('nav-dropdown-menu').classList.add('hidden');
+        }
+
+        function switchTab(tabId) {
+            const tabs = ['tracker', 'chart', 'pepites', 'analyzer', 'live-tracking', 'correlation', 'calculator', 'journal', 'sentiment', 'chat', 'admin-invites'];
+            tabs.forEach(t => document.getElementById(`tab-${t}`).classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            if(tabId === 'chart') updateTradingViewChart
