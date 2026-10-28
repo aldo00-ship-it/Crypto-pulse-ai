@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Pulse AI Terminal Pro</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' },
+                        dark: { bg: '#0b0f17', card: '#131b2e', border: '#1e293b' }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- TradingView Widget -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @keyframes pulse-ring { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 0.4; } 100% { transform: scale(0.95); opacity: 0.8; } }
+        .pulse-active { animation: pulse-ring 2s infinite ease-in-out; }
+    </style>
+</head>
+<body class="bg-[#0b0f17] text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-[#131b2e] border-b border-slate-800 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-bold text-lg text-white shadow-lg shadow-blue-500/30">
+                    ⚡
+                </div>
+                <div>
+                    <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent">
+                        CryptoPulse AI
+                    </span>
+                    <span class="text-[10px] uppercase tracking-wider font-semibold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30 ml-2">PRO V6</span>
+                </div>
+            </div>
+
+            <!-- Global PWA & Auth Status -->
+            <div class="flex items-center space-x-3">
+                <button id="pwa-install-btn" class="hidden items-center space-x-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-md transition">
+                    <i class="fa-solid fa-download">
+                    </i>
+                    <span>Installer PWA</span>
+                </button>
+                
+                <div id="auth-status-badge" class="flex items-center space-x-2 bg-slate-800/80 border border-slate-700 px-3 py-1 rounded-full text-xs text-slate-300">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span id="user-email-display">Session Active</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 overflow-x-auto border-t border-slate-800/50 py-2 scrollbar-none">
+            <button onclick="switchTab('live-tracker')" class="nav-tab px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 bg-blue-600 text-white shadow-md">
+                <i class="fa-solid fa-chart-line"></i><span>Top 150 Live</span>
+            </button>
+            <button onclick="switchTab('live-tracking')" class="nav-tab px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                <i class="fa-solid fa-bell text-yellow-400"></i><span>Suivi Live & Alertes</span>
+            </button>
+            <button onclick="switchTab('correlation')" class="nav-tab px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                <i class="fa-solid fa-diagram-project text-cyan-400"></i><span>Corrélation BTC</span>
+            </button>
+            <button onclick="switchTab('tradingview-workspace')" class="nav-tab px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                <i class="fa-solid fa-desktop text-indigo-400"></i><span>Workspace TradingView</span>
+            </button>
+            <button onclick="switchTab('risk-calc')" class="nav-tab px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                <i class="fa-solid fa-calculator text-emerald-400"></i><span>Gestion du Risque</span>
+            </button>
+            <button onclick="switchTab('trade-journal')" class="nav-tab px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                <i class="fa-solid fa-book-journal-whills text-purple-400"></i><span>Journal de Trade</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        
+        <!-- SECTION 1: TOP 150 LIVE TRACKER -->
+        <section id="sec-live-tracker" class="tab-content space-y-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#131b2e] p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <input type="text" id="search-crypto" oninput="filterCryptos()" placeholder="Rechercher une crypto (ex: BTC, SOL, RWA)..." class="bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 w-full md:w-80">
+                </div>
+                <div class="flex items-center space-x-2 overflow-x-auto">
+                    <button onclick="filterCategory('all')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white">Tous</button>
+                    <button onclick="filterCategory('rwa')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">RWA</button>
+                    <button onclick="filterCategory('ai')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">IA</button>
+                    <button onclick="filterCategory('defi')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">DeFi</button>
+                    <button onclick="filterCategory('meme')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">Memes</button>
+                </div>
+            </div>
+
+            <div class="bg-[#131b2e] rounded-xl border border-slate-800 overflow-hidden shadow-xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-900/80 text-xs text-slate-400 uppercase border-b border-slate-800">
+                            <tr>
+                                <th class="p-4">#</th>
+                                <th class="p-4">Actif</th>
+                                <th class="p-4">Prix</th>
+                                <th class="p-4">24h %</th>
+                                <th class="p-4">Volume 24h</th>
+                                <th class="p-4">Capitalisation</th>
+                                <th class="p-4 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="crypto-table-body" class="divide-y divide-slate-800/50">
+                            <tr>
+                                <td colspan="7" class="p-8 text-center text-slate-400">Chargement des données CoinGecko Top 150...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: SUIVI LIVE & ALERTES (BIM BIM AUDIO) -->
+        <section id="sec-live-tracking" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Nouveau Suivi Form -->
+                <div class="bg-[#131b2e] p-6 rounded-xl border border-slate-800 space-y-4">
+                    <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-plus-circle text-blue-400"></i>
+                        <span>Ajouter un Suivi de Position</span>
+                    </h3>
+                    <div class="space-y-3 text-sm">
+                        <div>
+                            <label class="text-xs text-slate-400">Cryptomonnaie</label>
+                            <input type="text" id="track-symbol" placeholder="ex: BTC, ETH, SOL" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white uppercase">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Type de Position</label>
+                            <select id="track-type" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                                <option value="LONG">LONG (Achat à effet de levier / Spot)</option>
+                                <option value="SHORT">SHORT (Vente à découvert)</option>
+                                <option value="HOLD">HOLD (Investissement Long Terme)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs text-slate-400">Prix d'Entrée ($)</label>
+                                <input type="number" id="track-entry" placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-400">Stop Loss ($)</label>
+                                <input type="number" id="track-sl" placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Take Profit ($)</label>
+                            <input type="number" id="track-tp" placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+                        </div>
+                        <button onclick="addLivePosition()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-lg shadow-lg transition">
+                            Activer la Surveillance Live
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Tracked Positions & Sound Controls -->
+                <div class="lg:col-span-2 bg-[#131b2e] p-6 rounded-xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Positions sous Surveillance 24/7</h3>
+                            <p class="text-xs text-slate-400">Analyse en direct de la proximité du TP/SL avec alarme "Bim Bim"</p>
+                        </div>
+                        <button onclick="playBimBimSound()" class="px-3 py-1.5 bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 rounded-lg text-xs font-semibold hover:bg-yellow-500/30 flex items-center space-x-2">
+                            <i class="fa-solid fa-volume-high"></i>
+                            <span>🔊 Tester le Son d'Alarme</span>
+                        </button>
+                    </div>
+
+                    <div id="tracked-positions-container" class="space-y-3">
+                        <div class="text-center py-8 text-slate-500 text-sm">Aucune position active sous surveillance. Ajoutez-en une à gauche !</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CORRELATION MATRIX -->
+        <section id="sec-correlation" class="tab-content hidden space-y-4">
+            <div class="bg-[#131b2e] p-6 rounded-xl border border-slate-800 space-y-4">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Matrice de Corrélation BTC & Relative Strength (Top 150)</h3>
+                        <p class="text-xs text-slate-400">Détecte les altcoins outperformer ou en divergence haussière par rapport au Bitcoin</p>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-900 text-xs text-slate-400 uppercase">
+                            <tr>
+                                <th class="p-3">Actif</th>
+                                <th class="p-3">Corrélation BTC</th>
+                                <th class="p-3">Bêta</th>
+                                <th class="p-3">Force Relative</th>
+                                <th class="p-3">Divergence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="correlation-table-body" class="divide-y divide-slate-800">
+                            <!-- Filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: TRADINGVIEW WORKSPACE -->
+        <section id="sec-tradingview-workspace" class="tab-content hidden space-y-4">
+            <div class="bg-[#131b2e] p-4 rounded-xl border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <span class="text-sm font-semibold text-slate-300">Paire Active:</span>
+                    <select id="tv-symbol-select" onchange="updateTVChart()" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-bold text-white">
+                        <option value="BINANCE:BTCUSDT">BTC/USDT</option>
+                        <option value="BINANCE:ETHUSDT">ETH/USDT</option>
+                        <option value="BINANCE:SOLUSDT">SOL/USDT</option>
+                        <option value="BINANCE:RENDORUSDT">RENDER/USDT</option>
+                        <option value="BINANCE:ONDOUSDT">ONDO/USDT</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bg-[#131b2e] rounded-xl border border-slate-800 h-[600px] overflow-hidden" id="tv-chart-container">
+                <!-- TradingView Embed -->
+            </div>
+        </section>
+
+        <!-- SECTION 5: RISK CALCULATOR -->
+        <section id="sec-risk-calc" class="tab-content hidden space-y-4">
+            <div class="max-w-xl mx-auto bg-[#131b2e] p-6 rounded-xl border border-slate-800 space-y-4">
+                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                    <span>Calculateur de Taille de Position & Risque</span>
+                </h3>
+                <div class="space-y-3 text-sm">
+                    <div>
+                        <label class="text-xs text-slate-400">Capital Total ($)</label>
+                        <input type="number" id="calc-capital" value="5000" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white" oninput="calculateRisk()">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400">Risque Toléré par Trade (%)</label>
+                        <input type="number" id="calc-risk-pct" value="1" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white" oninput="calculateRisk()">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-xs text-slate-400">Prix d'Entrée ($)</label>
+                            <input type="number" id="calc-entry" value="65000" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white" oninput="calculateRisk()">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Prix Stop Loss ($)</label>
+                            <input type="number" id="calc-sl" value="63500" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white" oninput="calculateRisk()">
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 bg-slate-900 rounded-lg border border-slate-800 space-y-2 mt-4 text-xs font-mono">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Montant Risqué Maximum:</span>
+                            <span id="risk-val-usd" class="text-red-400 font-bold">$50.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Taille de Position (USDT):</span>
+                            <span id="risk-val-pos" class="text-emerald-400 font-bold">$2,166.67</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Levier Max Recommandé (Spot/Futures):</span>
+                            <span id="risk-val-lev" class="text-yellow-400 font-bold">1x - 3x Max</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: TRADE JOURNAL -->
+        <section id="sec-trade-journal" class="tab-content hidden space-y-4">
+            <div class="bg-[#131b2e] p-6 rounded-xl border border-slate-800 space-y-4">
+                <h3 class="text-lg font-bold text-white">Journal de Trade & Historique</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-900 text-xs text-slate-400 uppercase">
+                            <tr>
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Crypto</th>
+                                <th class="p-3">Type</th>
+                                <th class="p-3">Entrée</th>
+                                <th class="p-3">Sortie</th>
+                                <th class="p-3">PnL ($)</th>
+                                <th class="p-3">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody id="journal-table-body" class="divide-y divide-slate-800">
+                            <tr>
+                                <td colspan="7" class="p-4 text-center text-slate-500">Aucun trade clôturé enregistré dans le journal.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Sound Synthesis for Bim Bim Alarm
+        function playBimBimSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc1 = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(880, ctx.currentTime); // High pitch A5
+                osc1.frequency.setValueAtTime(440, ctx.currentTime + 0.15); // Low pitch A4
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+                osc1.connect(gain);
+                gain.connect(ctx.destination);
+                osc1.start();
+                osc1.stop(ctx.currentTime + 0.4);
+            } catch(e) { console.log('Audio Context Error', e); }
+        }
+
+        // Navigation Tabs Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-tab').forEach(el => {
+                el.classList.remove('bg-blue-600', 'text-white');
+                el.classList.add('text-slate-400');
+            });
+            document.getElementById('sec-' + tabId).classList.remove('hidden');
+            event.currentTarget.classList.add('bg-blue-600', 'text-white');
+            
+            if(tabId === 'tradingview-workspace') updateTVChart();
+        }
+
+        // CoinGecko Top 150 Dynamic Fetch
+        async function loadTopCryptos() {
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false');
+                const data = await res.json();
+                const tbody = document.getElementById('crypto-table-body');
+                tbody.innerHTML = '';
+                
+                data.forEach((coin, idx) => {
+                    const priceChange = coin.price_change_percentage_24h || 0;
+                    const changeClass = priceChange >= 0 ? 'text-emerald-400' : 'text-red-400';
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-800/40 transition">
+                            <td class="p-4 text-slate-500 font-mono">${idx + 1}</td>
+                            <td class="p-4 font-bold flex items-center space-x-2">
+                                <img src="${coin.image}" class="w-5 h-5 rounded-full">
+                                <span>${coin.name}</span>
+                                <span class="text-xs text-slate-500 uppercase">${coin.symbol}</span>
+                            </td>
+                            <td class="p-4 font-mono font-semibold">$${coin.current_price.toLocaleString()}</td>
+                            <td class="p-4 font-mono font-semibold ${changeClass}">${priceChange.toFixed(2)}%</td>
+                            <td class="p-4 text-slate-400 font-mono">$${(coin.total_volume / 1e6).toFixed(1)}M</td>
+                            <td class="p-4 text-slate-400 font-mono">$${(coin.market_cap / 1e9).toFixed(2)}B</td>
+                            <td class="p-4 text-center">
+                                <button onclick="quickTrack('${coin.symbol.toUpperCase()}', ${coin.current_price})" class="px-2.5 py-1 bg-blue-600/20 text-blue-400 hover:bg-blue-600/40 rounded text-xs">Suivre</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch(e) {
+                console.log("Coingecko API Fetch Error");
+            }
+        }
+
+        // TradingView Widget Loader
+        function updateTVChart() {
+            const sym = document.getElementById('tv-symbol-select').value;
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": sym,
+                "interval": "60",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "fr",
+                "toolbar_bg": "#131b2e",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "container_id": "tv-chart-container"
+            });
+        }
+
+        // Risk Calculator logic
+        function calculateRisk() {
+            const cap = parseFloat(document.getElementById('calc-capital').value) || 0;
+            const pct = parseFloat(document.getElementById('calc-risk-pct').value) || 0;
+            const entry = parseFloat(document.getElementById('calc-entry').value) || 0;
+            const sl = parseFloat(document.getElementById('calc-sl').value) || 0;
+
+            const maxRiskUsd = cap * (pct / 100);
+            const slPct = Math.abs(entry - sl) / entry;
+            const posSize = slPct > 0 ? (maxRiskUsd / slPct) : 0;
+
+            document.getElementById('risk-val-usd').textContent = `$${maxRiskUsd.toFixed(2)}`;
+            document.getElementById('risk-val-pos').textContent = `$${posSize.toFixed(2)}`;
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTopCryptos();
+        });
+    </script>
+</body>
+</html>
