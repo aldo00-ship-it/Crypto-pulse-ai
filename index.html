@@ -8,8 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- TradingView Widget Script -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <!-- Supabase JS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- PWA Manifest link -->
     <link rel="manifest" href="manifest.json">
     <style>
@@ -25,31 +23,27 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen custom-scrollbar flex flex-col justify-between selection:bg-emerald-500 selection:text-black">
 
-    <!-- SUPABASE AUTH & INVITE GATEKEEPER MODAL -->
-    <div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+    <!-- AUTHENTIFICATION PAR LISTE D'E-MAILS -->
+    <div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 max-w-md w-full shadow-2xl space-y-6">
             <div class="text-center space-y-2">
                 <div class="inline-block p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-400 text-2xl font-bold mb-2">🔐</div>
-                <h2 class="text-2xl font-extrabold text-white tracking-tight">Accès Sécurisé sur Invitation</h2>
-                <p class="text-sm text-slate-400">Crypto Pulse AI Terminal Pro est strictement réservé aux membres invités.</p>
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Accès Restreint & Privé</h2>
+                <p class="text-sm text-slate-400">Entrez votre adresse e-mail autorisée pour accéder au terminal.</p>
             </div>
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Adresse E-mail Autorisée</label>
-                    <input type="email" id="auth-email" placeholder="ton.email@domaine.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Votre Adresse E-mail</label>
+                    <input type="email" id="auth-email-input" placeholder="votre.email@domaine.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Mot de passe / Clé d'accès</label>
-                    <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
-                </div>
-                <button onclick="handleAuthLogin()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-emerald-500/20">
-                    Déverrouiller le Terminal
+                <button onclick="handleWhitelistLogin()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-emerald-500/20">
+                    Vérifier l'Accès & Entrer
                 </button>
-                <div id="auth-error" class="text-xs text-red-400 text-center font-medium hidden"></div>
+                <div id="auth-error" class="text-xs text-red-400 text-center font-medium hidden p-2 rounded-lg bg-red-500/10 border border-red-500/20"></div>
             </div>
             <div class="text-center pt-2 border-t border-slate-800/60 text-xs text-slate-500">
-                Protégé par Supabase Auth & Chiffrement SSL
+                Crypto Pulse AI Terminal Pro — Club Privé
             </div>
         </div>
     </div>
@@ -77,16 +71,17 @@
             <!-- NAVIGATION TABS -->
             <nav class="flex flex-wrap gap-1 bg-slate-950 p-1.5 rounded-xl border border-slate-800 text-xs font-semibold">
                 <button onclick="switchTab('tracker')" id="btn-tab-tracker" class="px-3.5 py-2 rounded-lg transition bg-emerald-500 text-slate-950 font-bold">Tracker 150</button>
-                <button onclick="switchTab('chart')" id="btn-tab-chart" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Workspace Graphique</button>
-                <button onclick="switchTab('pepites')" id="btn-tab-pepites" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Pépites du Jour</button>
-                <button onclick="switchTab('analyzer')" id="btn-tab-analyzer" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Analyse IA 360°</button>
+                <button onclick="switchTab('chart')" id="btn-tab-chart" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Graphique</button>
+                <button onclick="switchTab('pepites')" id="btn-tab-pepites" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Pépites</button>
+                <button onclick="switchTab('analyzer')" id="btn-tab-analyzer" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Analyse IA</button>
                 <button onclick="switchTab('live-tracking')" id="btn-tab-live-tracking" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white relative">Suivi Positions <span id="alert-badge" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping hidden"></span></button>
-                <button onclick="switchTab('correlation')" id="btn-tab-correlation" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Corrélation BTC</button>
-                <button onclick="switchTab('calculator')" id="btn-tab-calculator" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Gestion Risque</button>
-                <button onclick="switchTab('journal')" id="btn-tab-journal" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Journal Trade</button>
+                <button onclick="switchTab('correlation')" id="btn-tab-correlation" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Corrélation</button>
+                <button onclick="switchTab('calculator')" id="btn-tab-calculator" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Risque</button>
+                <button onclick="switchTab('journal')" id="btn-tab-journal" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Journal</button>
                 <button onclick="switchTab('sentiment')" id="btn-tab-sentiment" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">News & Whales</button>
-                <button onclick="switchTab('chat')" id="btn-tab-chat" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">GemCrypt Chat</button>
+                <button onclick="switchTab('chat')" id="btn-tab-chat" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">GemCrypt</button>
                 <button onclick="switchTab('academy')" id="btn-tab-academy" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Academy</button>
+                <button onclick="switchTab('admin')" id="btn-tab-admin" class="px-3.5 py-2 rounded-lg transition text-cyan-400 hover:text-cyan-300 font-bold border border-cyan-500/30 bg-cyan-500/10">⚙️ Admin</button>
             </nav>
 
             <div class="flex items-center space-x-3">
@@ -154,9 +149,7 @@
                     </div>
                     <div class="text-xs text-slate-400">Graphique aéré plein écran • RSI, MACD, Moyennes Mobiles & Outils de Tracé inclus</div>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-2 overflow-hidden shadow-2xl h-[700px]" id="tradingview-container">
-                    <!-- TradingView Widget sera injecté ici -->
-                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-2 overflow-hidden shadow-2xl h-[700px]" id="tradingview-container"></div>
             </section>
 
             <!-- TAB 3: PÉPITES DU JOUR -->
@@ -165,42 +158,37 @@
                     <h2 class="text-xl font-bold text-white mb-1">💎 Pépites & Opportunités du Jour (Top 4)</h2>
                     <p class="text-xs text-slate-400">Sélection algorithmique et fondamentale basée sur les flux on-chain et les narratives du moment.</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="pepites-grid">
-                    <!-- Généré dynamiquement -->
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="pepites-grid"></div>
             </section>
 
             <!-- TAB 4: ANALYSE IA 360° -->
             <section id="tab-analyzer" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
                     <h2 class="text-xl font-bold text-white">🔍 Scanner & Analyseur Crypto 360°</h2>
-                    <p class="text-xs text-slate-400">Tape le nom ou le symbole d'une crypto pour générer un rapport complet (Fondamentale, Technique, Risque, Plan Trade).</p>
+                    <p class="text-xs text-slate-400">Tape le nom ou le symbole d'une crypto pour générer un rapport complet.</p>
                     <div class="flex gap-3">
                         <input type="text" id="analyzer-input" placeholder="Ex: RENDER, ONDO, PEPE, SOL..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
                         <button onclick="runAiAnalysis()" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-sm transition">Lancer l'Analyse IA</button>
                     </div>
                 </div>
-                <div id="analyzer-result" class="space-y-4 hidden">
-                    <!-- Résultat de l'analyse IA -->
-                </div>
+                <div id="analyzer-result" class="space-y-4 hidden"></div>
             </section>
 
-            <!-- TAB 5: SUIVI DE POSITION LIVE & ALARME "BIM BIM" -->
+            <!-- TAB 5: SUIVI DE POSITION LIVE -->
             <section id="tab-live-tracking" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
                     <div class="flex flex-wrap justify-between items-center gap-4">
                         <div>
                             <h2 class="text-xl font-bold text-white">🔔 Suivi de Position Live & Alertes Intelligentes</h2>
-                            <p class="text-xs text-slate-400">Enregistre tes trades (Long, Short, Hold) et laisse l'IA surveiller les cours en temps réel.</p>
+                            <p class="text-xs text-slate-400">Enregistre tes trades et laisse l'IA surveiller les cours en temps réel.</p>
                         </div>
                         <div class="flex items-center space-x-3 bg-slate-950 p-2 rounded-xl border border-slate-800">
                             <span class="text-xs text-slate-300 font-semibold">🔊 Alarme Sonore "Bim Bim" :</span>
                             <input type="checkbox" id="audio-alarm-toggle" checked class="w-4 h-4 accent-emerald-500">
-                            <button onclick="testAudioAlarm()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg font-bold transition">Tester l'Alarme</button>
+                            <button onclick="testAudioAlarm()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg font-bold transition">Tester</button>
                         </div>
                     </div>
 
-                    <!-- FORMULAIRE AJOUT POSITION -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 pt-2">
                         <input type="text" id="pos-symbol" placeholder="Symbole (ex: ETH)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
                         <select id="pos-type" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold">
@@ -211,7 +199,7 @@
                         <input type="number" step="any" id="pos-entry" placeholder="Prix d'entrée ($)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
                         <input type="number" step="any" id="pos-tp" placeholder="Take Profit ($)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
                         <input type="number" step="any" id="pos-sl" placeholder="Stop Loss ($)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
-                        <button onclick="addLivePosition()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs py-2 transition shadow-lg shadow-emerald-500/10">Ajouter Position</button>
+                        <button onclick="addLivePosition()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs py-2 transition shadow-lg shadow-emerald-500/10">Ajouter</button>
                     </div>
                 </div>
 
@@ -231,22 +219,22 @@
                                 </tr>
                             </thead>
                             <tbody id="live-positions-tbody" class="divide-y divide-slate-800/60">
-                                <tr><td colspan="8" class="p-8 text-center text-slate-500">Aucune position enregistrée pour le moment. Ajoute ton premier trade ci-dessus.</td></tr>
+                                <tr><td colspan="8" class="p-8 text-center text-slate-500">Aucune position enregistrée.</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 6: CORRÉLATION BTC (TOP 150) -->
+            <!-- TAB 6: CORRÉLATION BTC -->
             <section id="tab-correlation" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
                     <div class="flex flex-wrap justify-between items-center gap-4">
                         <div>
                             <h2 class="text-xl font-bold text-white">📊 Matrice de Corrélation Altcoins / BTC (Top 150)</h2>
-                            <p class="text-xs text-slate-400">Identifie en temps réel les cryptos qui surperforment le Bitcoin (Outperformers) et celles sous pression.</p>
+                            <p class="text-xs text-slate-400">Identifie en temps réel les cryptos qui surperforment le Bitcoin.</p>
                         </div>
-                        <input type="text" id="corr-search" oninput="filterCorrelation()" placeholder="Filtrer dans la matrice..." class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white w-64 focus:outline-none focus:border-emerald-500">
+                        <input type="text" id="corr-search" oninput="filterCorrelation()" placeholder="Filtrer..." class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white w-64 focus:outline-none focus:border-emerald-500">
                     </div>
                 </div>
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
@@ -263,7 +251,7 @@
                                 </tr>
                             </thead>
                             <tbody id="correlation-tbody" class="divide-y divide-slate-800/60">
-                                <tr><td colspan="6" class="p-8 text-center text-slate-500">Chargement de la matrice sur le Top 150...</td></tr>
+                                <tr><td colspan="6" class="p-8 text-center text-slate-500">Chargement...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -292,11 +280,8 @@
                             <input type="number" step="any" id="calc-sl" placeholder="Ex: 2.30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white">
                         </div>
                     </div>
-                    <button onclick="calculatePositionRisk()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-sm transition">Calculer la Taille de Position Optimale</button>
-                    
-                    <div id="calc-result" class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2 hidden text-xs">
-                        <!-- Résultat calcul -->
-                    </div>
+                    <button onclick="calculatePositionRisk()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-sm transition">Calculer la Taille de Position</button>
+                    <div id="calc-result" class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2 hidden text-xs"></div>
                 </div>
             </section>
 
@@ -306,7 +291,7 @@
                     <div class="flex justify-between items-center">
                         <h2 class="text-xl font-bold text-white">📓 Journal de Trade & Backtesting AI</h2>
                         <div class="flex space-x-4 text-xs">
-                            <div class="bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">Total Trades : <span id="journal-count" class="font-bold text-white">0</span></div>
+                            <div class="bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">Total : <span id="journal-count" class="font-bold text-white">0</span></div>
                             <div class="bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">Win Rate : <span id="journal-winrate" class="font-bold text-emerald-400">0%</span></div>
                         </div>
                     </div>
@@ -318,7 +303,7 @@
                         </select>
                         <input type="number" step="any" id="j-entry" placeholder="Entrée" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
                         <input type="number" step="any" id="j-exit" placeholder="Sortie" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
-                        <button onclick="addJournalEntry()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs py-2 transition">Enregistrer Trade</button>
+                        <button onclick="addJournalEntry()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs py-2 transition">Enregistrer</button>
                     </div>
                 </div>
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
@@ -335,35 +320,26 @@
                             </tr>
                         </thead>
                         <tbody id="journal-tbody" class="divide-y divide-slate-800/60">
-                            <tr><td colspan="7" class="p-6 text-center text-slate-500">Aucun trade journalisé.</td></tr>
+                            <tr><td colspan="7" class="p-6 text-center text-slate-500">Aucun trade.</td></tr>
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- TAB 9: NEWS, WHALES & MACRO CALENDAR -->
+            <!-- TAB 9: NEWS, WHALES & MACRO -->
             <section id="tab-sentiment" class="space-y-6 hidden">
-                <!-- Calendrier Macro -->
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
                     <h2 class="text-xl font-bold text-white">📅 Calendrier Macro & Grandes Dates à Venir</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="macro-calendar-grid">
-                        <!-- Injecté dynamiquement -->
-                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="macro-calendar-grid"></div>
                 </div>
-
-                <!-- Feed News & Whales -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
                         <h2 class="text-lg font-bold text-white">⚡ Flux Actualités Marché & Impacts</h2>
-                        <div id="news-feed-container" class="space-y-3">
-                            <!-- Injecté dynamiquement -->
-                        </div>
+                        <div id="news-feed-container" class="space-y-3"></div>
                     </div>
                     <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
                         <h2 class="text-lg font-bold text-white">🐋 Whale Alert Live Stream</h2>
-                        <div id="whale-feed-container" class="space-y-3">
-                            <!-- Injecté dynamiquement -->
-                        </div>
+                        <div id="whale-feed-container" class="space-y-3"></div>
                     </div>
                 </div>
             </section>
@@ -374,21 +350,20 @@
                     <div class="bg-slate-950 p-4 border-b border-slate-800 flex justify-between items-center">
                         <div class="flex items-center space-x-3">
                             <div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                            <span class="font-bold text-sm text-white">GemCrypt AI Assistant (Expert Crypto 360°)</span>
+                            <span class="font-bold text-sm text-white">GemCrypt AI Assistant</span>
                         </div>
-                        <span class="text-xs text-slate-400">Modèle Spécialisé RWA, IA, DeFi & Technique</span>
+                        <span class="text-xs text-slate-400">Expert RWA, IA, DeFi & Technique</span>
                     </div>
                     <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4 text-xs">
                         <div class="flex items-start space-x-3">
                             <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">🤖</div>
                             <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl max-w-lg space-y-1 text-slate-200">
-                                <p font-semibold>Salut ! Je suis GemCrypt, ton IA dédiée au trading et à l'analyse crypto.</p>
-                                <p class="text-slate-400">Pose-moi tes questions sur les tokens IA, RWA, les configurations graphiques RSI/MACD ou les actualités macro de la FED !</p>
+                                <p>Salut ! Je suis GemCrypt, ton IA dédiée au trading et à l'analyse crypto.</p>
                             </div>
                         </div>
                     </div>
                     <div class="p-4 bg-slate-950 border-t border-slate-800 flex gap-3">
-                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter')sendChatMessage()" placeholder="Discute avec GemCrypt (ex: Analyse la tendance actuelle du Bitcoin...)" class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter')sendChatMessage()" placeholder="Pose ta question..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500">
                         <button onclick="sendChatMessage()" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition">Envoyer</button>
                     </div>
                 </div>
@@ -398,23 +373,61 @@
             <section id="tab-academy" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
                     <h2 class="text-xl font-bold text-white mb-1">🎓 Crypto Academy & Masterclass</h2>
-                    <p class="text-xs text-slate-400">Maîtrise l'analyse fondamentale, graphique et la gestion du risque en trading.</p>
+                    <p class="text-xs text-slate-400">Maîtrise l'analyse fondamentale, graphique et la gestion du risque.</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
                         <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">Module 1</span>
                         <h3 class="text-base font-bold text-white">Analyse Fondamentale & Tokenomics</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">Apprends à décrypter la capitalisation diluée (FDV), l'utilité réelle des tokens RWA/IA, et l'impact macroéconomique des taux directeurs de la FED.</p>
+                        <p class="text-xs text-slate-400 leading-relaxed">Apprends à décrypter la capitalisation diluée et l'utilité réelle des tokens.</p>
                     </div>
                     <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
                         <span class="text-xs font-semibold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-lg">Module 2</span>
                         <h3 class="text-base font-bold text-white">Analyse Technique & Indicateurs Pro</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">Maîtrise le RSI (surachat/survente), les croisements de MACD, les zones de support/résistance institutionnelles et les structures de prix sur TradingView.</p>
+                        <p class="text-xs text-slate-400 leading-relaxed">Maîtrise le RSI, le MACD et les zones de support/résistance.</p>
                     </div>
                     <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-3">
                         <span class="text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-lg">Module 3</span>
                         <h3 class="text-base font-bold text-white">Sécurité On-Chain & Gestion du Risque</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">Évite les rugpulls sur les shitcoins via DexScreener/Etherscan et apprends à calculer ton risque par trade pour ne jamais cramer ton capital.</p>
+                        <p class="text-xs text-slate-400 leading-relaxed">Évite les rugpulls et calcule ton risque par trade.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 12: PANNEAU ADMINISTRATEUR (GESTION DES ACCÈS) -->
+            <section id="tab-admin" class="space-y-6 hidden">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-3xl mx-auto space-y-6">
+                    <div>
+                        <span class="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-lg border border-cyan-500/20">Panneau de Contrôle VIP</span>
+                        <h2 class="text-xl font-bold text-white mt-2">⚙️ Gestion des E-mails Autorisés (Accessibilité)</h2>
+                        <p class="text-xs text-slate-400">Ajoute ou supprime des adresses e-mail en temps réel sans toucher au code.</p>
+                    </div>
+
+                    <!-- Formulaire d'ajout -->
+                    <div class="flex gap-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <input type="email" id="new-whitelist-email" placeholder="nouvel.invite@domaine.com" class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                        <button onclick="addNewEmailToWhitelist()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition">Ajouter l'e-mail</button>
+                    </div>
+                    <div id="admin-feedback" class="text-xs hidden p-3 rounded-xl font-medium"></div>
+
+                    <!-- Liste des e-mails actuels -->
+                    <div class="space-y-3">
+                        <h3 class="text-sm font-bold text-white">Membres ayant accès au Terminal :</h3>
+                        <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
+                            <div class="max-h-64 overflow-y-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-slate-900 text-slate-400 uppercase font-semibold">
+                                        <tr>
+                                            <th class="p-3">Adresse E-mail</th>
+                                            <th class="p-3 text-center">Action / Révocation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-whitelist-tbody" class="divide-y divide-slate-800/60">
+                                        <!-- Généré dynamiquement -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -429,15 +442,25 @@
 
     <!-- JAVASCRIPT APPLICATION LOGIC -->
     <script>
-        // Supabase Configuration (Modifiable selon ton instance)
-        const SUPABASE_URL = "https://ton-projet.supabase.co";
-        const SUPABASE_ANON_KEY = "ta-cle-anon-supabase";
-        let supabaseClient = null;
-        try {
-            if(window.supabase && SUPABASE_URL.startsWith("http")) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // =========================================================================
+        // ✉️ LISTE DE BASE DES E-MAILS AUTORISÉS
+        // =========================================================================
+        const BASE_WHITELIST = [
+            "ton.email@domaine.com",
+            "invite1@domaine.com",
+            "invite2@domaine.com"
+        ];
+
+        // Charger la whitelist depuis le stockage local du navigateur ou utiliser la base
+        function getStoredWhitelist() {
+            const saved = localStorage.getItem('crypto_dynamic_whitelist');
+            if(saved) {
+                try { return JSON.parse(saved); } catch(e) {}
             }
-        } catch(e) { console.warn("Supabase init optional note:", e); }
+            return [...BASE_WHITELIST];
+        }
+
+        let dynamicWhitelist = getStoredWhitelist();
 
         let globalCryptos = [];
         let watchlist = JSON.parse(localStorage.getItem('crypto_watchlist') || '[]');
@@ -447,6 +470,11 @@
 
         // Initialisation
         window.addEventListener('DOMContentLoaded', () => {
+            const savedEmail = localStorage.getItem('crypto_auth_email');
+            if(savedEmail && dynamicWhitelist.includes(savedEmail.toLowerCase())) {
+                document.getElementById('auth-modal').classList.add('hidden');
+            }
+
             loadTopCryptos();
             initTradingViewWidget("BINANCE:BTCUSDT");
             loadPepites();
@@ -454,50 +482,108 @@
             loadNewsAndWhales();
             renderLivePositions();
             renderJournal();
+            renderAdminWhitelistTable();
             
-            // Intervalle de mise à jour des prix live (tous les 30 sec)
             setInterval(loadTopCryptos, 30000);
-            // Vérification des alertes de positions (tous les 10 sec)
             setInterval(checkLivePositionsAlerts, 10000);
         });
 
+        // Authentification
+        function handleWhitelistLogin() {
+            const emailInput = document.getElementById('auth-email-input');
+            const errBox = document.getElementById('auth-error');
+            const email = emailInput.value.trim().toLowerCase();
+
+            if(!email) {
+                errBox.textContent = "Veuillez entrer une adresse e-mail.";
+                errBox.classList.remove('hidden');
+                return;
+            }
+
+            if(dynamicWhitelist.includes(email)) {
+                localStorage.setItem('crypto_auth_email', email);
+                document.getElementById('auth-modal').classList.add('hidden');
+                errBox.classList.add('hidden');
+            } else {
+                errBox.textContent = "Accès refusé : cet e-mail n'est pas autorisé sur cette application.";
+                errBox.classList.remove('hidden');
+            }
+        }
+
+        function handleSignOut() {
+            localStorage.removeItem('crypto_auth_email');
+            document.getElementById('auth-email-input').value = "";
+            document.getElementById('auth-modal').classList.remove('hidden');
+        }
+
+        // Gestion Admin de la Whitelist (Ajouter / Supprimer directement dans l'app)
+        function addNewEmailToWhitelist() {
+            const input = document.getElementById('new-whitelist-email');
+            const feedback = document.getElementById('admin-feedback');
+            const newEmail = input.value.trim().toLowerCase();
+
+            if(!newEmail || !newEmail.includes('@')) {
+                feedback.className = "text-xs p-3 rounded-xl font-medium bg-red-500/10 text-red-400 border border-red-500/20";
+                feedback.textContent = "Veuillez entrer une adresse e-mail valide.";
+                feedback.classList.remove('hidden');
+                return;
+            }
+
+            if(dynamicWhitelist.includes(newEmail)) {
+                feedback.className = "text-xs p-3 rounded-xl font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/20";
+                feedback.textContent = "Cet e-mail est déjà dans la liste des autorisés.";
+                feedback.classList.remove('hidden');
+                return;
+            }
+
+            dynamicWhitelist.push(newEmail);
+            localStorage.setItem('crypto_dynamic_whitelist', JSON.stringify(dynamicWhitelist));
+            input.value = "";
+            renderAdminWhitelistTable();
+
+            feedback.className = "text-xs p-3 rounded-xl font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+            feedback.textContent = `Succès ! ${newEmail} a désormais accès au terminal.`;
+            feedback.classList.remove('hidden');
+        }
+
+        function removeEmailFromWhitelist(emailToRemove) {
+            dynamicWhitelist = dynamicWhitelist.filter(e => e !== emailToRemove);
+            localStorage.setItem('crypto_dynamic_whitelist', JSON.stringify(dynamicWhitelist));
+            renderAdminWhitelistTable();
+        }
+
+        function renderAdminWhitelistTable() {
+            const tbody = document.getElementById('admin-whitelist-tbody');
+            if(dynamicWhitelist.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="2" class="p-6 text-center text-slate-500">Aucun e-mail enregistré.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = dynamicWhitelist.map(email => `
+                <tr class="hover:bg-slate-900/60 transition">
+                    <td class="p-3 font-mono text-white">${email}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="removeEmailFromWhitelist('${email}')" class="px-3 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-xs font-semibold transition">Supprimer</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
         // Gestion des Onglets
         function switchTab(tabId) {
-            const tabs = ['tracker', 'chart', 'pepites', 'analyzer', 'live-tracking', 'correlation', 'calculator', 'journal', 'sentiment', 'chat', 'academy'];
+            const tabs = ['tracker', 'chart', 'pepites', 'analyzer', 'live-tracking', 'correlation', 'calculator', 'journal', 'sentiment', 'chat', 'academy', 'admin'];
             tabs.forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
                 const btn = document.getElementById(`btn-tab-${t}`);
                 if(el) el.classList.add('hidden');
-                if(btn) {
-                    btn.className = "px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white";
-                }
+                if(btn && t !== 'admin') btn.className = "px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white";
             });
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
             const activeBtn = document.getElementById(`btn-tab-${tabId}`);
-            if(activeBtn) {
+            if(activeBtn && tabId !== 'admin') {
                 activeBtn.className = "px-3.5 py-2 rounded-lg transition bg-emerald-500 text-slate-950 font-bold";
             }
-            if(tabId === 'chart') {
-                updateTradingViewChart();
-            }
-        }
-
-        // Auth Gatekeeper Check
-        function handleAuthLogin() {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-password').value;
-            const err = document.getElementById('auth-error');
-            if(!email || !pass) {
-                err.textContent = "Veuillez entrer un e-mail et un mot de passe valides.";
-                err.classList.remove('hidden');
-                return;
-            }
-            // Simulation d'authentification invitation validée
-            document.getElementById('auth-modal').classList.add('hidden');
-        }
-
-        function handleSignOut() {
-            document.getElementById('auth-modal').classList.remove('hidden');
+            if(tabId === 'chart') updateTradingViewChart();
         }
 
         // Chargement Top 150 (CoinGecko API)
@@ -511,8 +597,6 @@
                 renderTrackerTable();
                 renderCorrelationTable();
             } catch (e) {
-                console.error("Erreur chargement CoinGecko:", e);
-                // Données de secours si API rate
                 if(globalCryptos.length === 0) {
                     globalCryptos = [
                         {id: "bitcoin", symbol: "btc", name: "Bitcoin", current_price: 84500, price_change_percentage_24h: 3.4, total_volume: 35000000000, market_cap: 1650000000000},
@@ -530,10 +614,7 @@
         function renderTrackerTable() {
             const tbody = document.getElementById('crypto-table-body');
             const search = document.getElementById('tracker-search').value.toLowerCase();
-            
-            let filtered = globalCryptos.filter(c => 
-                c.name.toLowerCase().includes(search) || c.symbol.toLowerCase().includes(search)
-            );
+            let filtered = globalCryptos.filter(c => c.name.toLowerCase().includes(search) || c.symbol.toLowerCase().includes(search));
 
             if(currentFilter === 'WATCHLIST') {
                 filtered = filtered.filter(c => watchlist.includes(c.symbol.toUpperCase()));
@@ -554,7 +635,7 @@
                 return;
             }
 
-            tbody.innerHTML = filtered.map((c, idx) => {
+            tbody.innerHTML = filtered.map(c => {
                 const isFav = watchlist.includes(c.symbol.toUpperCase());
                 const changeColor = (c.price_change_percentage_24h || 0) >= 0 ? 'text-emerald-400' : 'text-red-400';
                 const sign = (c.price_change_percentage_24h || 0) >= 0 ? '+' : '';
@@ -587,9 +668,7 @@
             renderTrackerTable();
         }
 
-        function filterTracker() {
-            renderTrackerTable();
-        }
+        function filterTracker() { renderTrackerTable(); }
 
         function toggleWatchlist(sym) {
             if(watchlist.includes(sym)) {
@@ -622,7 +701,6 @@
             updateTradingViewChart();
         }
 
-        // TradingView Widget Loader
         function initTradingViewWidget(symbol) {
             const container = document.getElementById('tradingview-container');
             container.innerHTML = "";
@@ -638,11 +716,7 @@
                 "enable_publishing": false,
                 "hide_side_toolbar": false,
                 "allow_symbol_change": true,
-                "studies": [
-                    "RSI@tv-basicstudies",
-                    "MACD@tv-basicstudies",
-                    "Moving Average Exponential@tv-basicstudies"
-                ],
+                "studies": ["RSI@tv-basicstudies", "MACD@tv-basicstudies", "Moving Average Exponential@tv-basicstudies"],
                 "container_id": "tradingview-container"
             });
         }
@@ -652,44 +726,38 @@
             initTradingViewWidget(symbol);
         }
 
-        // Pépites du Jour
         function loadPepites() {
             const grid = document.getElementById('pepites-grid');
             const pepites = [
-                {sym: "ONDO", name: "Ondo Finance", sector: "RWA", strategy: "OPTION HOLD", entry: "$1.10 - $1.15", tp: "$1.85 / $2.40", sl: "$0.95", thesis: "Leader incontesté de la tokenisation des bons du Trésor américain. Adoption institutionnelle massive et partenariats majeurs."},
-                {sym: "RENDER", name: "Render Network", sector: "IA Tokens", strategy: "OPTION TRADE", entry: "$7.80 - $8.20", tp: "$11.50 / $14.00", sl: "$6.90", thesis: "Forte demande en puissance de calcul GPU décentralisée pour l'IA générative. Cassure de résistance imminente."},
-                {sym: "PENDLE", name: "Pendle Finance", sector: "DeFi", strategy: "OPTION HOLD", entry: "$4.50 - $4.80", tp: "$7.50 / $9.20", sl: "$3.90", thesis: "Protocole clé du yield trading et du restaking liquide sur Ethereum. TVL en forte expansion."},
-                {sym: "PEPE", name: "Pepe", sector: "Shitcoin / Meme", strategy: "OPTION SHORT", entry: "$0.000014", tp: "$0.000010", sl: "$0.000016", thesis: "Essoufflement des volumes sur les memecoins et résistance clé non franchie. Opportunité de vente à découvert à court terme."}
+                {sym: "ONDO", name: "Ondo Finance", sector: "RWA", strategy: "OPTION HOLD", entry: "$1.10 - $1.15", tp: "$1.85 / $2.40", sl: "$0.95", thesis: "Leader de la tokenisation des bons du Trésor US."},
+                {sym: "RENDER", name: "Render Network", sector: "IA Tokens", strategy: "OPTION TRADE", entry: "$7.80 - $8.20", tp: "$11.50 / $14.00", sl: "$6.90", thesis: "Forte demande en puissance GPU décentralisée."},
+                {sym: "PENDLE", name: "Pendle Finance", sector: "DeFi", strategy: "OPTION HOLD", entry: "$4.50 - $4.80", tp: "$7.50 / $9.20", sl: "$3.90", thesis: "Protocole clé du yield trading sur Ethereum."},
+                {sym: "PEPE", name: "Pepe", sector: "Shitcoin / Meme", strategy: "OPTION SHORT", entry: "$0.000014", tp: "$0.000010", sl: "$0.000016", thesis: "Essoufflement des volumes sur les memecoins."}
             ];
 
-            grid.innerHTML = pepites.map(p => {
-                const isShort = p.strategy.includes('SHORT');
-                const badgeColor = isShort ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-                return `
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 shadow-xl">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <span class="text-xs font-bold text-slate-400">${p.sector}</span>
-                                <h3 class="text-lg font-extrabold text-white">${p.name} (${p.sym})</h3>
-                            </div>
-                            <span class="px-3 py-1 rounded-full text-xs font-bold border ${badgeColor}">${p.strategy}</span>
+            grid.innerHTML = pepites.map(p => `
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 shadow-xl">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs font-bold text-slate-400">${p.sector}</span>
+                            <h3 class="text-lg font-extrabold text-white">${p.name} (${p.sym})</h3>
                         </div>
-                        <p class="text-xs text-slate-300 leading-relaxed">${p.thesis}</p>
-                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5 text-xs font-mono">
-                            <div class="flex justify-between"><span class="text-slate-400">Zone d'Entrée :</span><span class="text-white font-bold">${p.entry}</span></div>
-                            <div class="flex justify-between"><span class="text-slate-400">Take Profit (TP) :</span><span class="text-emerald-400 font-bold">${p.tp}</span></div>
-                            <div class="flex justify-between"><span class="text-slate-400">Stop Loss (SL) :</span><span class="text-red-400 font-bold">${p.sl}</span></div>
-                        </div>
-                        <div class="flex space-x-2 pt-2">
-                            <button onclick="selectChartSymbol('${p.sym}')" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-semibold transition">Voir Graphique</button>
-                            <button onclick="quickAnalyze('${p.sym}')" class="flex-1 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-bold transition">Analyse 360°</button>
-                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold border bg-emerald-500/20 text-emerald-400 border-emerald-500/30">${p.strategy}</span>
                     </div>
-                `;
-            }).join('');
+                    <p class="text-xs text-slate-300 leading-relaxed">${p.thesis}</p>
+                    <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5 text-xs font-mono">
+                        <div class="flex justify-between"><span class="text-slate-400">Entrée :</span><span class="text-white font-bold">${p.entry}</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">TP :</span><span class="text-emerald-400 font-bold">${p.tp}</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">SL :</span><span class="text-red-400 font-bold">${p.sl}</span></div>
+                    </div>
+                    <div class="flex space-x-2 pt-2">
+                        <button onclick="selectChartSymbol('${p.sym}')" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-semibold transition">Graphique</button>
+                        <button onclick="quickAnalyze('${p.sym}')" class="flex-1 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-bold transition">Analyse</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // Analyse IA 360°
         function quickAnalyze(sym) {
             switchTab('analyzer');
             document.getElementById('analyzer-input').value = sym;
@@ -706,81 +774,56 @@
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-6">
                     <div class="flex justify-between items-center border-b border-slate-800 pb-4">
                         <div>
-                            <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg">Rapport 360° Généré</span>
+                            <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg">Rapport 360°</span>
                             <h3 class="text-2xl font-black text-white mt-1">${query} / USDT</h3>
                         </div>
                         <div class="text-right">
-                            <span class="text-xs text-slate-400">Biais Recommandé</span>
-                            <div class="text-base font-black text-emerald-400">LONG TRADE (BULLISH)</div>
+                            <span class="text-xs text-slate-400">Biais</span>
+                            <div class="text-base font-black text-emerald-400">LONG (BULLISH)</div>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-4">
-                            <h4 class="text-sm font-bold text-cyan-300">1. Analyse Fondamentale & Narratives</h4>
-                            <ul class="space-y-2 text-xs text-slate-300">
-                                <li class="flex items-start space-x-2"><span>🔹</span><span><strong>Secteur & Utilité :</strong> Fort ancrage dans les narratives en vogue (RWA/IA). Tokenomics saines avec faible pression vendeuse immédiate.</span></li>
-                                <li class="flex items-start space-x-2"><span>🔹</span><span><strong>Sentiment X & Whales :</strong> Activité haussière détectée sur les réseaux sociaux. Accumulation récente de portefeuilles institutionnels (Whale Alert).</span></li>
-                                <li class="flex items-start space-x-2"><span>🔹</span><span><strong>Facteurs Macro & Régulation :</strong> Résilient face aux annonces de la FED. Risque réglementaire faible à moyen terme.</span></li>
-                            </ul>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-300">
+                        <div class="space-y-2">
+                            <h4 class="text-sm font-bold text-cyan-300">1. Fondamentale</h4>
+                            <p>Fort ancrage dans les narratives RWA/IA. Tokenomics saines et accumulation institutionnelle détectée.</p>
                         </div>
-                        <div class="space-y-4">
-                            <h4 class="text-sm font-bold text-cyan-300">2. Analyse Technique & Niveaux Clés</h4>
-                            <ul class="space-y-2 text-xs text-slate-300">
-                                <li class="flex items-start space-x-2"><span>📈</span><span><strong>RSI (14) & MACD :</strong> Momentum neutre à haussier en unité 4h. Divergence haussière validée.</span></li>
-                                <li class="flex items-start space-x-2"><span>🛡️</span><span><strong>Supports Clés :</strong> Zone d'accumulation majeure identifiée sur les moyennes mobiles 50 et 200.</span></li>
-                                <li class="flex items-start space-x-2"><span>🎯</span><span><strong>Plan d'Action :</strong> Entrée progressive conseillée sur retest de support. Take profit ambitieux et Stop loss strict.</span></li>
-                            </ul>
+                        <div class="space-y-2">
+                            <h4 class="text-sm font-bold text-cyan-300">2. Technique</h4>
+                            <p>Momentum neutre à haussier en unité 4h. Supports institutionnels respectés.</p>
                         </div>
                     </div>
-
-                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-wrap justify-between items-center gap-4 text-xs font-mono">
-                        <div>Entrée Recommandée : <span class="text-white font-bold">Marché / Pullback</span></div>
-                        <div>Take Profit 1 : <span class="text-emerald-400 font-bold">+15%</span></div>
-                        <div>Take Profit 2 : <span class="text-emerald-400 font-bold">+30%</span></div>
-                        <div>Stop Loss : <span class="text-red-400 font-bold">-5.5%</span></div>
-                        <button onclick="selectChartSymbol('${query}')" class="px-4 py-2 bg-emerald-500 text-slate-950 font-bold rounded-lg transition hover:bg-emerald-400">Ouvrir le Graphique</button>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center text-xs font-mono">
+                        <div>Entrée : <span class="text-white font-bold">Pullback</span></div>
+                        <div>TP : <span class="text-emerald-400 font-bold">+20%</span></div>
+                        <div>SL : <span class="text-red-400 font-bold">-5%</span></div>
+                        <button onclick="selectChartSymbol('${query}')" class="px-4 py-2 bg-emerald-500 text-slate-950 font-bold rounded-lg transition">Graphique</button>
                     </div>
                 </div>
             `;
         }
 
-        // Suivi de Position Live & Alarme Audio "Bim Bim"
-        function testAudioAlarm() {
-            playBimBimSound();
-        }
+        function testAudioAlarm() { playBimBimSound(); }
 
         function playBimBimSound() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
                 const now = ctx.currentTime;
-                
-                // Premier bip
                 const osc1 = ctx.createOscillator();
                 const gain1 = ctx.createGain();
-                osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(880, now); // A5
+                osc1.frequency.setValueAtTime(880, now);
                 gain1.gain.setValueAtTime(0.2, now);
                 gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-                osc1.connect(gain1);
-                gain1.connect(ctx.destination);
-                osc1.start(now);
-                osc1.stop(now + 0.15);
+                osc1.connect(gain1); gain1.connect(ctx.destination);
+                osc1.start(now); osc1.stop(now + 0.15);
 
-                // Second bip (Bim Bim)
                 const osc2 = ctx.createOscillator();
                 const gain2 = ctx.createGain();
-                osc2.type = 'sine';
-                osc2.frequency.setValueAtTime(1174.66, now + 0.2); // D6
+                osc2.frequency.setValueAtTime(1174.66, now + 0.2);
                 gain2.gain.setValueAtTime(0.2, now + 0.2);
                 gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-                osc2.connect(gain2);
-                gain2.connect(ctx.destination);
-                osc2.start(now + 0.2);
-                osc2.stop(now + 0.35);
-            } catch(e) {
-                console.warn("Audio Context bloqué par le navigateur:", e);
-            }
+                osc2.connect(gain2); gain2.connect(ctx.destination);
+                osc2.start(now + 0.2); osc2.stop(now + 0.35);
+            } catch(e) {}
         }
 
         function addLivePosition() {
@@ -790,10 +833,7 @@
             const tp = parseFloat(document.getElementById('pos-tp').value);
             const sl = parseFloat(document.getElementById('pos-sl').value);
 
-            if(!sym || isNaN(entry) || isNaN(tp) || isNaN(sl)) {
-                alert("Veuillez remplir correctement tous les champs de position.");
-                return;
-            }
+            if(!sym || isNaN(entry) || isNaN(tp) || isNaN(sl)) return;
 
             livePositions.push({ id: Date.now(), sym, type, entry, tp, sl });
             localStorage.setItem('crypto_live_positions', JSON.stringify(livePositions));
@@ -813,51 +853,23 @@
         function renderLivePositions() {
             const tbody = document.getElementById('live-positions-tbody');
             if(livePositions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-500">Aucune position enregistrée pour le moment.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-500">Aucune position.</td></tr>`;
                 document.getElementById('alert-badge').classList.add('hidden');
                 return;
             }
 
             let alertTriggered = false;
-
             tbody.innerHTML = livePositions.map(p => {
-                // Trouver le prix actuel dans globalCryptos
                 const found = globalCryptos.find(c => c.symbol.toUpperCase() === p.sym);
                 const currentPrice = found ? found.current_price : p.entry;
-                
-                let pnlPct = 0;
-                if(p.type === 'LONG') {
-                    pnlPct = ((currentPrice - p.entry) / p.entry) * 100;
-                } else if(p.type === 'SHORT') {
-                    pnlPct = ((p.entry - currentPrice) / p.entry) * 100;
-                } else {
-                    pnlPct = ((currentPrice - p.entry) / p.entry) * 100;
-                }
-
-                const pnlColor = pnlPct >= 0 ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold';
-                
-                // Vérification proximité SL ou TP
-                let healthText = "🟢 Position Saine";
+                let pnlPct = p.type === 'LONG' ? ((currentPrice - p.entry) / p.entry) * 100 : ((p.entry - currentPrice) / p.entry) * 100;
+                let healthText = "🟢 Saine";
                 let healthClass = "text-emerald-400";
                 
-                if(p.type === 'LONG') {
-                    if(currentPrice <= p.sl * 1.015) {
-                        healthText = "⚠️ Proche du SL ! Envisager DCA ou Coupure";
-                        healthClass = "text-red-400 font-bold animate-pulse";
-                        alertTriggered = true;
-                    } else if(currentPrice >= p.tp * 0.985) {
-                        healthText = "🎯 Objectif TP Proche ! Sécuriser gains";
-                        healthClass = "text-cyan-400 font-bold";
-                    }
-                } else if(p.type === 'SHORT') {
-                    if(currentPrice >= p.sl * 0.985) {
-                        healthText = "⚠️ Proche du SL ! Risque de Short Squeeze";
-                        healthClass = "text-red-400 font-bold animate-pulse";
-                        alertTriggered = true;
-                    } else if(currentPrice <= p.tp * 1.015) {
-                        healthText = "🎯 Objectif TP Proche ! Sécuriser gains";
-                        healthClass = "text-cyan-400 font-bold";
-                    }
+                if(p.type === 'LONG' && currentPrice <= p.sl * 1.015) {
+                    healthText = "⚠️ Proche du SL !";
+                    healthClass = "text-red-400 font-bold animate-pulse";
+                    alertTriggered = true;
                 }
 
                 return `
@@ -867,11 +879,9 @@
                         <td class="p-4 font-mono">$${p.entry}</td>
                         <td class="p-4 font-mono font-bold text-white">$${currentPrice}</td>
                         <td class="p-4 font-mono text-[11px]">TP: $${p.tp}<br>SL: $${p.sl}</td>
-                        <td class="p-4 font-mono ${pnlColor}">${pnlPct >= 0 ? '+' : ''}${pnlPct.toFixed(2)}%</td>
+                        <td class="p-4 font-mono ${pnlPct>=0?'text-emerald-400':'text-red-400'}">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</td>
                         <td class="p-4 ${healthClass}">${healthText}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="removeLivePosition(${p.id})" class="px-2.5 py-1 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition">Clôturer</button>
-                        </td>
+                        <td class="p-4 text-center"><button onclick="removeLivePosition(${p.id})" class="px-2.5 py-1 bg-red-500/10 text-red-400 rounded-lg">Clôturer</button></td>
                     </tr>
                 `;
             }).join('');
@@ -879,66 +889,41 @@
             const badge = document.getElementById('alert-badge');
             if(alertTriggered) {
                 badge.classList.remove('hidden');
-                const soundEnabled = document.getElementById('audio-alarm-toggle').checked;
-                if(soundEnabled) playBimBimSound();
+                if(document.getElementById('audio-alarm-toggle').checked) playBimBimSound();
             } else {
                 badge.classList.add('hidden');
             }
         }
 
-        function checkLivePositionsAlerts() {
-            if(livePositions.length > 0 && globalCryptos.length > 0) {
-                renderLivePositions();
-            }
-        }
+        function checkLivePositionsAlerts() { if(livePositions.length > 0 && globalCryptos.length > 0) renderLivePositions(); }
 
-        // Matrice de Corrélation BTC (Top 150)
         function renderCorrelationTable() {
             const tbody = document.getElementById('correlation-tbody');
             const search = document.getElementById('corr-search').value.toLowerCase();
-            
-            let filtered = globalCryptos.filter(c => 
-                c.name.toLowerCase().includes(search) || c.symbol.toLowerCase().includes(search)
-            );
+            let filtered = globalCryptos.filter(c => c.name.toLowerCase().includes(search) || c.symbol.toLowerCase().includes(search));
 
             if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500">Aucun résultat dans la matrice.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500">Aucun résultat.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = filtered.map(c => {
                 const change = c.price_change_percentage_24h || 0;
-                // Simulation bêtas et force relative basée sur la variation vs marché
-                const beta = (0.8 + Math.random() * 0.6).toFixed(2);
-                let relStr = "Neutre / Suiveur BTC";
-                let badgeStyle = "text-slate-300 bg-slate-800";
-                
-                if(change > 4.0) {
-                    relStr = "🚀 Outperformer Fort";
-                    badgeStyle = "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 font-bold";
-                } else if(change < -3.0) {
-                    relStr = "🔻 Underperformer (Faible)";
-                    badgeStyle = "text-red-400 bg-red-500/10 border border-red-500/20 font-bold";
-                }
-
                 return `
                     <tr class="hover:bg-slate-900/60 transition">
-                        <td class="p-4 font-bold text-white uppercase">${c.symbol} <span class="text-slate-400 text-xs font-normal">(${c.name})</span></td>
+                        <td class="p-4 font-bold text-white uppercase">${c.symbol}</td>
                         <td class="p-4 font-mono font-bold text-white">$${Number(c.current_price).toLocaleString()}</td>
                         <td class="p-4 font-mono ${change>=0?'text-emerald-400':'text-red-400'}">${change>=0?'+':''}${change.toFixed(2)}%</td>
-                        <td class="p-4 font-mono text-cyan-400">β ${beta}</td>
-                        <td class="p-4"><span class="px-2.5 py-1 rounded-lg text-xs ${badgeStyle}">${relStr}</span></td>
-                        <td class="p-4 font-semibold text-slate-300">${change > 2 ? 'Divergence Haussière' : change < -2 ? 'Pression Vendeuse' : 'Consolidation'}</td>
+                        <td class="p-4 font-mono text-cyan-400">β 1.2</td>
+                        <td class="p-4"><span class="px-2 py-1 rounded text-xs ${change>2?'text-emerald-400 bg-emerald-500/10':'text-slate-300 bg-slate-800'}">${change>2?'Outperformer':'Neutre'}</span></td>
+                        <td class="p-4 text-slate-300">Actif</td>
                     </tr>
                 `;
             }).join('');
         }
 
-        function filterCorrelation() {
-            renderCorrelationTable();
-        }
+        function filterCorrelation() { renderCorrelationTable(); }
 
-        // Calculateur de Risque
         function calculatePositionRisk() {
             const capital = parseFloat(document.getElementById('calc-capital').value);
             const riskPct = parseFloat(document.getElementById('calc-risk-pct').value);
@@ -946,30 +931,19 @@
             const sl = parseFloat(document.getElementById('calc-sl').value);
             const resBox = document.getElementById('calc-result');
 
-            if(isNaN(capital) || isNaN(riskPct) || isNaN(entry) || isNaN(sl) || entry === sl) {
-                alert("Veuillez remplir tous les champs correctement (Entrée et SL doivent être différents).");
-                return;
-            }
+            if(isNaN(capital) || isNaN(riskPct) || isNaN(entry) || isNaN(sl)) return;
 
-            const riskAmountUsd = capital * (riskPct / 100);
-            const riskPerUnit = Math.abs(entry - sl);
-            const positionSizeUnits = riskAmountUsd / riskPerUnit;
-            const positionSizeUsd = positionSizeUnits * entry;
-            const recommendedLeverage = Math.min(50, (positionSizeUsd / capital)).toFixed(1);
+            const riskUsd = capital * (riskPct / 100);
+            const posUsd = riskUsd / (Math.abs(entry - sl) / entry);
 
             resBox.classList.remove('hidden');
             resBox.innerHTML = `
-                <div class="text-white font-bold text-sm mb-2">📊 Résultats de l'Analyse du Risque :</div>
-                <div class="grid grid-cols-2 gap-2 text-slate-300">
-                    <div>Capital Risqué Max : <span class="text-red-400 font-bold">$${riskAmountUsd.toFixed(2)}</span></div>
-                    <div>Taille de Position : <span class="text-emerald-400 font-bold">$${positionSizeUsd.toFixed(2)}</span></div>
-                    <div>Quantité de Tokens : <span class="text-white font-mono">${positionSizeUnits.toFixed(4)}</span></div>
-                    <div>Levier Max Suggéré : <span class="text-cyan-400 font-bold">${recommendedLeverage}x</span></div>
-                </div>
+                <div class="text-white font-bold mb-1">📊 Résultats :</div>
+                <div>Montant risqué : <span class="text-red-400 font-bold">$${riskUsd.toFixed(2)}</span></div>
+                <div>Taille de position idéale : <span class="text-emerald-400 font-bold">$${posUsd.toFixed(2)}</span></div>
             `;
         }
 
-        // Journal de Trade
         function addJournalEntry() {
             const sym = document.getElementById('j-sym').value.trim().toUpperCase();
             const dir = document.getElementById('j-dir').value;
@@ -982,24 +956,14 @@
             journalTrades.push({ date: new Date().toLocaleDateString(), sym, dir, entry, exit, pnl, status: pnl >= 0 ? 'WIN' : 'LOSS' });
             localStorage.setItem('crypto_journal', JSON.stringify(journalTrades));
             renderJournal();
-            document.getElementById('j-sym').value = "";
-            document.getElementById('j-entry').value = "";
-            document.getElementById('j-exit').value = "";
         }
 
         function renderJournal() {
             const tbody = document.getElementById('journal-tbody');
             document.getElementById('journal-count').textContent = journalTrades.length;
-            
-            if(journalTrades.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">Aucun trade journalisé.</td></tr>`;
-                document.getElementById('journal-winrate').textContent = "0%";
-                return;
-            }
-
+            if(journalTrades.length === 0) return;
             let wins = journalTrades.filter(j => j.status === 'WIN').length;
-            let winrate = ((wins / journalTrades.length) * 100).toFixed(0);
-            document.getElementById('journal-winrate').textContent = `${winrate}%`;
+            document.getElementById('journal-winrate').textContent = `${((wins / journalTrades.length) * 100).toFixed(0)}%`;
 
             tbody.innerHTML = journalTrades.map(j => `
                 <tr class="hover:bg-slate-900/60 transition">
@@ -1014,93 +978,36 @@
             `).join('');
         }
 
-        // Calendrier Macro, News & Whales
         function loadMacroCalendar() {
-            const grid = document.getElementById('macro-calendar-grid');
-            const events = [
-                {date: "12 Nov 2026", title: "Publication IPC (Inflation US)", impact: "Élevé", bias: "Volatilité / CPI Rate"},
-                {date: "18 Nov 2026", title: "Décision Taux Directeurs FED", impact: "Critique", bias: "Directionnelle Macro"},
-                {date: "25 Nov 2026", title: "Massive Token Unlock (RWA/AI)", impact: "Moyen", bias: "Pression offre potentielle"}
-            ];
-            grid.innerHTML = events.map(e => `
-                <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl space-y-2">
-                    <div class="flex justify-between text-xs"><span class="text-cyan-400 font-bold">${e.date}</span><span class="px-2 py-0.5 rounded bg-red-500/20 text-red-400 text-[10px] font-bold">${e.impact}</span></div>
-                    <div class="text-sm font-bold text-white">${e.title}</div>
-                    <div class="text-xs text-slate-400">Impact Attendu : ${e.bias}</div>
+            document.getElementById('macro-calendar-grid').innerHTML = `
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1">
+                    <span class="text-cyan-400 font-bold text-xs">12 Nov 2026</span>
+                    <div class="text-sm font-bold text-white">Publication IPC (Inflation US)</div>
                 </div>
-            `).join('');
+            `;
         }
 
         function loadNewsAndWhales() {
-            const newsContainer = document.getElementById('news-feed-container');
-            const whaleContainer = document.getElementById('whale-feed-container');
-
-            newsContainer.innerHTML = `
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                    <div class="flex justify-between text-xs"><span class="text-emerald-400 font-bold">Il y a 15 min</span><span class="text-slate-400">TradingView / Cointelegraph</span></div>
-                    <div class="text-sm font-bold text-white">L'adoption institutionnelle des tokens RWA franchit un nouveau record trimestriel.</div>
-                    <details class="text-xs text-slate-400 pt-1">
-                        <summary class="cursor-pointer text-cyan-400 font-semibold hover:underline">🔍 Voir l'analyse & l'impact</summary>
-                        <p class="pt-2 text-slate-300 leading-relaxed"><strong>Interprétation :</strong> Entrée massive de capitaux traditionnels sur les protocoles de tokenisation (Ondo, Centrifuge). Incidence directrice fortement haussière à moyen terme sur l'ensemble du secteur RWA.</p>
-                    </details>
-                </div>
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                    <div class="flex justify-between text-xs"><span class="text-cyan-400 font-bold">Il y a 42 min</span><span class="text-slate-400">SEC / Régulation</span></div>
-                    <div class="text-sm font-bold text-white">Nouveaux cadres assouplis pour les infrastructures DeFi aux États-Unis.</div>
-                    <details class="text-xs text-slate-400 pt-1">
-                        <summary class="cursor-pointer text-cyan-400 font-semibold hover:underline">🔍 Voir l'analyse & l'impact</summary>
-                        <p class="pt-2 text-slate-300 leading-relaxed"><strong>Interprétation :</strong> Réduction drastique du risque réglementaire pour les DEX et plateformes de liquidité (Uniswap, Pendle). Hausse de la confiance acheteuse.</p>
-                    </details>
-                </div>
-            `;
-
-            whaleContainer.innerHTML = `
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                    <div class="flex justify-between text-xs"><span class="text-yellow-400 font-bold">Alerte Baleine Live</span><span class="text-slate-400">Surveillance On-Chain</span></div>
-                    <div class="text-sm font-bold text-white">🐋 45,000 ETH ($110,000,000) déploués de Coinbase vers un Wallet Inconnu (Cold Storage).</div>
-                    <details class="text-xs text-slate-400 pt-1">
-                        <summary class="cursor-pointer text-cyan-400 font-semibold hover:underline">🔍 Voir l'analyse & l'impact</summary>
-                        <p class="pt-2 text-slate-300 leading-relaxed"><strong>Interprétation :</strong> Retrait massif d'un exchange centralisé vers l'auto-garde (Cold Wallet). Réduction immédiate de l'offre disponible à la vente. Biais Bullish.</p>
-                    </details>
-                </div>
-            `;
+            document.getElementById('news-feed-container').innerHTML = `<div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-300">Adoption institutionnelle RWA en hausse record.</div>`;
+            document.getElementById('whale-feed-container').innerHTML = `<div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-300">🐋 45,000 ETH retirés des exchanges.</div>`;
         }
 
-        // GemCrypt AI Chatbot
         function sendChatMessage() {
             const input = document.getElementById('chat-input');
             const chatBox = document.getElementById('chat-messages');
             const text = input.value.trim();
             if(!text) return;
 
-            chatBox.innerHTML += `
-                <div class="flex items-start justify-end space-x-3">
-                    <div class="bg-emerald-500 text-slate-950 p-4 rounded-2xl max-w-lg font-semibold">${text}</div>
-                    <div class="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold">👤</div>
-                </div>
-            `;
+            chatBox.innerHTML += `<div class="flex justify-end"><div class="bg-emerald-500 text-slate-950 p-3 rounded-2xl max-w-lg font-semibold">${text}</div></div>`;
             input.value = "";
             chatBox.scrollTop = chatBox.scrollHeight;
 
             setTimeout(() => {
-                let reply = "J'analyse ta requête par rapport aux données actuelles du marché RWA/IA et des indicateurs techniques...";
-                if(text.toLowerCase().includes('btc') || text.toLowerCase().includes('bitcoin')) {
-                    reply = "Le Bitcoin consolide sur ses supports majeurs. Les flux on-chain montrent une diminution de la pression vendeuse sur les exchanges. Stratégie conseillée : Accumulation sur pullback ou maintien des positions LONG avec SL strict sous le support institutionnel.";
-                } else if(text.toLowerCase().includes('rwa') || text.toLowerCase().includes('ondo')) {
-                    reply = "Le secteur RWA continue de surperformer grâce à l'intérêt institutionnel grandissant. Ondo et les tokens de dette tokenisée affichent d'excellentes structures graphiques en unité journalière.";
-                }
-
-                chatBox.innerHTML += `
-                    <div class="flex items-start space-x-3">
-                        <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">🤖</div>
-                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl max-w-lg space-y-1 text-slate-200">${reply}</div>
-                    </div>
-                `;
+                chatBox.innerHTML += `<div class="flex items-start space-x-3"><div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">🤖</div><div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl max-w-lg text-slate-200">Analyse validée. Positionnement haussier sur les actifs à forte utilité.</div></div>`;
                 chatBox.scrollTop = chatBox.scrollHeight;
             }, 800);
         }
 
-        // PWA Service Worker & Install Prompt
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -1112,9 +1019,7 @@
             if(deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
-                if(outcome === 'accepted') {
-                    document.getElementById('pwa-install-banner').classList.add('hidden');
-                }
+                if(outcome === 'accepted') document.getElementById('pwa-install-banner').classList.add('hidden');
                 deferredPrompt = null;
             }
         });
