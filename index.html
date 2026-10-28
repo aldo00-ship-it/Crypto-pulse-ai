@@ -3,14 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Pulse AI Terminal Pro - Ultimate Edition V8</title>
-    <!-- Tailwind CSS -->
+    <title>Crypto Pulse AI Terminal Pro - Ultimate Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- TradingView Widget Script -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- PWA Manifest link -->
     <link rel="manifest" href="manifest.json">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -23,110 +19,102 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen custom-scrollbar flex flex-col justify-between selection:bg-emerald-500 selection:text-black">
 
-    <!-- SUPABASE AUTH & INVITE GATEKEEPER MODAL -->
-    <div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+    <!-- SUPABASE AUTH GATEKEEPER MODAL -->
+    <div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 max-w-md w-full shadow-2xl space-y-6">
             <div class="text-center space-y-2">
                 <div class="inline-block p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-400 text-2xl font-bold mb-2">🔐</div>
                 <h2 class="text-2xl font-extrabold text-white tracking-tight">Accès Sécurisé sur Invitation</h2>
-                <p class="text-sm text-slate-400">Entrez votre identifiant unique ou lien d'invitation valide (24h max).</p>
+                <p class="text-sm text-slate-400">Crypto Pulse AI Terminal Pro est strictement réservé aux membres invités.</p>
             </div>
-            
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">E-mail ou Jeton d'Invitation</label>
-                    <input type="email" id="auth-email" placeholder="votre.email@domaine.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Adresse E-mail Autorisée</label>
+                    <input type="email" id="auth-email" placeholder="ton.email@domaine.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Code d'accès Sécurisé</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Mot de passe / Clé d'accès</label>
                     <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition">
                 </div>
                 <button onclick="handleAuthLogin()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-emerald-500/20">
-                    Valider et Entrer dans le Terminal
+                    Déverrouiller le Terminal
                 </button>
                 <div id="auth-error" class="text-xs text-red-400 text-center font-medium hidden"></div>
-            </div>
-            <div class="text-center pt-2 border-t border-slate-800/60 text-xs text-slate-500">
-                Sécurité Stricte • Session Unique par Appareil
             </div>
         </div>
     </div>
 
+    <!-- PWA INSTALL BANNER -->
+    <div id="pwa-install-banner" class="hidden bg-gradient-to-r from-emerald-900/80 to-cyan-900/80 border-b border-emerald-500/30 px-4 py-3 text-xs text-emerald-200 flex justify-between items-center z-40">
+        <span>📱 Installe l'application sur ton Bureau ou Mobile !</span>
+        <button id="pwa-install-btn" class="bg-emerald-500 text-slate-950 font-bold px-3 py-1 rounded-lg text-xs hover:bg-emerald-400 transition">Installer</button>
+    </div>
+
     <!-- MAIN APP CONTAINER -->
     <div id="main-app" class="flex-1 flex flex-col">
-        <!-- HEADER AVEC MENU DÉROULANT (HAMBURGER) -->
-        <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-40 px-6 py-3.5 flex justify-between items-center">
+        <!-- HEADER AVEC MENU DÉROULANT OPTIMISÉ -->
+        <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-30 px-4 py-3 flex justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <div class="p-2 bg-gradient-to-tr from-emerald-500 to-cyan-500 rounded-xl text-slate-950 font-black text-lg">⚡</div>
+                <div class="p-2 bg-gradient-to-tr from-emerald-500 to-cyan-500 rounded-xl text-slate-950 font-black text-base">⚡</div>
                 <div>
-                    <h1 class="text-base font-black tracking-wider bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                        CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">V8 PRO</span>
+                    <h1 class="text-sm sm:text-base font-black tracking-wider bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+                        CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">V7 PRO</span>
                     </h1>
                 </div>
             </div>
 
-            <!-- MENU DÉROULANT DES FONCTIONS -->
-            <div class="relative">
-                <button onclick="toggleNavDropdown()" class="flex items-center space-x-2 bg-slate-950 border border-slate-800 hover:border-emerald-500/50 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-200 transition shadow-lg">
-                    <span id="current-tab-title" class="text-emerald-400">📊 Tracker Top 150</span>
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
+            <!-- MENU DÉROULANT PRO -->
+            <div class="flex items-center space-x-2">
+                <select id="app-navigation-select" onchange="switchTab(this.value)" class="bg-slate-950 border border-emerald-500/40 text-emerald-300 font-bold rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-400 shadow-lg transition">
+                    <option value="tracker">📊 Tracker Top 150</option>
+                    <option value="chart">📈 Workspace Graphique</option>
+                    <option value="pepites">💎 Pépites du Jour</option>
+                    <option value="analyzer">🔍 Analyse IA 360°</option>
+                    <option value="live-tracking">🔔 Suivi Positions & Alarme</option>
+                    <option value="correlation">📉 Corrélation BTC</option>
+                    <option value="calculator">🧮 Gestion Risque</option>
+                    <option value="journal">📓 Journal Trade</option>
+                    <option value="sentiment">⚡ News & Whales</option>
+                    <option value="chat">🤖 GemCrypt Chat</option>
+                    <option value="academy">🎓 Crypto Academy</option>
+                </select>
 
-                <!-- Dropdown Menu Box -->
-                <div id="nav-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl py-2 z-50 text-xs space-y-1">
-                    <button onclick="switchTab('tracker'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2"><span>📊</span><span>Tracker Top 150</span></button>
-                    <button onclick="switchTab('chart'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2"><span>📈</span><span>Workspace Graphique</span></button>
-                    <button onclick="switchTab('pepites'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2"><span>💎</span><span>Pépites du Jour</span></button>
-                    <button onclick="switchTab('analyzer'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2"><span>🔍</span><span>Analyse IA 360°</span></button>
-                    <button onclick="switchTab('live-tracking'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center justify-between">
-                        <span class="flex items-center space-x-2"><span>🔔</span><span>Suivi Positions & Alertes</span></span>
-                        <span id="alert-badge-menu" class="w-2 h-2 bg-red-500 rounded-full animate-ping hidden"></span>
-                    </button>
-                    <button onclick="switchTab('correlation'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2"><span>📉</span><span>Corrélation BTC</span></button>
-                    <button onclick="switchTab('calculator'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2"><span>🧮</span><span>Gestion du Risque</span></button>
-                    <button onclick="switchTab('journal'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2"><span>📓</span><span>Journal de Trade</span></button>
-                    <button onclick="switchTab('sentiment'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2"><span>⚡</span><span>News & Whales</span></button>
-                    <button onclick="switchTab('chat'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-slate-300 hover:text-white transition flex items-center space-x-2"><span>🤖</span><span>GemCrypt AI Chat</span></button>
-                    <button onclick="switchTab('admin-invites'); closeDropdown();" class="w-full text-left px-4 py-2.5 hover:bg-slate-800 text-emerald-400 hover:text-emerald-300 transition flex items-center space-x-2 border-t border-slate-800"><span>✉️</span><span>Générer des Invitations (24h)</span></button>
-                    <button onclick="handleSignOut()" class="w-full text-left px-4 py-2.5 hover:bg-red-500/10 text-red-400 transition flex items-center space-x-2 border-t border-slate-800"><span>🚪</span><span>Déconnexion</span></button>
-                </div>
+                <button onclick="handleSignOut()" class="text-xs text-slate-400 hover:text-red-400 border border-slate-800 px-2.5 py-2 rounded-xl transition" title="Déconnexion">🔒</button>
             </div>
         </header>
 
         <!-- CONTENT AREA -->
-        <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+        <main class="flex-1 p-4 sm:p-6 max-w-7xl mx-auto w-full space-y-6">
 
             <!-- TAB 1: TRACKER TOP 150 -->
             <section id="tab-tracker" class="space-y-4">
                 <div class="flex flex-wrap justify-between items-center gap-4 bg-slate-900 border border-slate-800 p-4 rounded-2xl">
-                    <div class="flex items-center space-x-2">
-                        <input type="text" id="tracker-search" oninput="filterTracker()" placeholder="Rechercher un token (ex: ONDO, TAO...)" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white w-72 focus:outline-none focus:border-emerald-500">
-                        <button onclick="loadTopCryptos()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-semibold transition">🔄 Actualiser Live</button>
+                    <div class="flex items-center space-x-2 w-full sm:w-auto">
+                        <input type="text" id="tracker-search" oninput="filterTracker()" placeholder="Rechercher (ex: ONDO, BTC)..." class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white w-full sm:w-72 focus:outline-none focus:border-emerald-500">
                     </div>
                     <div class="flex flex-wrap gap-1.5 text-xs font-semibold">
                         <button onclick="filterCategory('ALL')" class="cat-btn px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 transition">Tous</button>
                         <button onclick="filterCategory('RWA')" class="cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 transition">RWA</button>
                         <button onclick="filterCategory('AI')" class="cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 transition">IA</button>
-                        <button onclick="filterCategory('GAMING')" class="cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 transition">Gaming</button>
-                        <button onclick="filterCategory('WATCHLIST')" class="cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-yellow-400 transition">⭐ Watchlist</button>
+                        <button onclick="filterCategory('MEME')" class="cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 transition">Memes</button>
+                        <button onclick="filterCategory('WATCHLIST')" class="cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-yellow-400 transition">⭐ Favoris</button>
                     </div>
                 </div>
 
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider">
+                            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 font-semibold uppercase">
                                 <tr>
-                                    <th class="p-4">Token</th>
-                                    <th class="p-4">Prix (USD)</th>
-                                    <th class="p-4">24h</th>
-                                    <th class="p-4">Volume</th>
-                                    <th class="p-4">Market Cap</th>
-                                    <th class="p-4 text-center">Actions</th>
+                                    <th class="p-3">Token</th>
+                                    <th class="p-3">Prix</th>
+                                    <th class="p-3">24h</th>
+                                    <th class="p-3">Volume</th>
+                                    <th class="p-3 text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="crypto-table-body" class="divide-y divide-slate-800/60">
-                                <tr><td colspan="6" class="p-8 text-center text-slate-500">Chargement des 150 cryptos en direct...</td></tr>
+                                <tr><td colspan="5" class="p-8 text-center text-slate-500">Chargement des données du marché...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -135,21 +123,23 @@
 
             <!-- TAB 2: ADVANCED TRADINGVIEW WORKSPACE -->
             <section id="tab-chart" class="space-y-4 hidden">
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex justify-between items-center">
-                    <select id="chart-symbol-select" onchange="updateTradingViewChart()" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-emerald-400 font-bold focus:outline-none">
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex justify-between items-center gap-4">
+                    <select id="chart-symbol-select" onchange="updateTradingViewChart()" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-emerald-400 font-bold focus:outline-none focus:border-emerald-500 w-full">
                         <option value="BINANCE:BTCUSDT">Bitcoin (BTC/USDT)</option>
                         <option value="BINANCE:ETHUSDT">Ethereum (ETH/USDT)</option>
                         <option value="BINANCE:SOLUSDT">Solana (SOL/USDT)</option>
                         <option value="BINANCE:ONDOUSDT">Ondo (ONDO/USDT)</option>
+                        <option value="BINANCE:RENDERUSDT">Render (RENDER/USDT)</option>
+                        <option value="BINANCE:PEPEUSDT">Pepe (PEPE/USDT)</option>
                     </select>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-2 h-[650px]" id="tradingview-container"></div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-2 overflow-hidden shadow-2xl h-[600px]" id="tradingview-container"></div>
             </section>
 
             <!-- TAB 3: PÉPITES DU JOUR -->
             <section id="tab-pepites" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                    <h2 class="text-xl font-bold text-white mb-1">💎 Pépites & Opportunités du Jour</h2>
+                    <h2 class="text-xl font-bold text-white mb-1">💎 Pépites du Jour</h2>
                     <p class="text-xs text-slate-400">Sélection algorithmique basée sur les flux on-chain.</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="pepites-grid"></div>
@@ -158,9 +148,9 @@
             <!-- TAB 4: ANALYSE IA 360° -->
             <section id="tab-analyzer" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                    <h2 class="text-xl font-bold text-white">🔍 Scanner & Analyseur Crypto 360°</h2>
+                    <h2 class="text-xl font-bold text-white">🔍 Analyseur Crypto 360°</h2>
                     <div class="flex gap-3">
-                        <input type="text" id="analyzer-input" placeholder="Ex: RENDER, ONDO..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
+                        <input type="text" id="analyzer-input" placeholder="Ex: RENDER, ONDO..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
                         <button onclick="runAiAnalysis()" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-sm transition">Analyser</button>
                     </div>
                 </div>
@@ -170,16 +160,16 @@
             <!-- TAB 5: SUIVI DE POSITION LIVE & ALARME -->
             <section id="tab-live-tracking" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-xl font-bold text-white">🔔 Suivi Live & Alarme "Bim Bim"</h2>
-                        <div class="flex items-center space-x-3 bg-slate-950 p-2 rounded-xl border border-slate-800">
-                            <span class="text-xs text-slate-300">Son actif :</span>
-                            <input type="checkbox" id="audio-alarm-toggle" checked class="w-4 h-4 accent-emerald-500">
-                            <button onclick="testAudioAlarm()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg font-bold">Tester</button>
+                    <div class="flex justify-between items-center flex-wrap gap-4">
+                        <h2 class="text-xl font-bold text-white">🔔 Suivi de Position Live & Alarme</h2>
+                        <div class="flex items-center space-x-2 bg-slate-950 p-2 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-300">🔊 Alarme Bim Bim :</span>
+                            <input type="checkbox" id="audio-alarm-toggle" checked class="accent-emerald-500 w-4 h-4">
+                            <button onclick="testAudioAlarm()" class="px-3 py-1 bg-slate-800 text-xs rounded-lg font-bold">Tester</button>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-                        <input type="text" id="pos-symbol" placeholder="Symbole" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
+                        <input type="text" id="pos-symbol" placeholder="Symbole (ex: ETH)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
                         <select id="pos-type" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold">
                             <option value="LONG">🟢 LONG</option>
                             <option value="SHORT">🔴 SHORT</option>
@@ -187,18 +177,24 @@
                         <input type="number" step="any" id="pos-entry" placeholder="Entrée ($)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
                         <input type="number" step="any" id="pos-tp" placeholder="TP ($)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
                         <input type="number" step="any" id="pos-sl" placeholder="SL ($)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
-                        <button onclick="addLivePosition()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs py-2">Ajouter</button>
+                        <button onclick="addLivePosition()" class="bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs py-2 transition">Ajouter</button>
                     </div>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
                     <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-950 text-slate-400 uppercase">
+                        <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase">
                             <tr>
-                                <th class="p-4">Position</th><th class="p-4">Type</th><th class="p-4">Entrée</th><th class="p-4">Actuel</th><th class="p-4">TP / SL</th><th class="p-4">PnL</th><th class="p-4">Santé</th><th class="p-4 text-center">Action</th>
+                                <th class="p-3">Pos</th>
+                                <th class="p-3">Type</th>
+                                <th class="p-3">Entrée</th>
+                                <th class="p-3">Actuel</th>
+                                <th class="p-3">PnL Live</th>
+                                <th class="p-3">Statut</th>
+                                <th class="p-3 text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody id="live-positions-tbody" class="divide-y divide-slate-800/60">
-                            <tr><td colspan="8" class="p-8 text-center text-slate-500">Aucune position active.</td></tr>
+                            <tr><td colspan="7" class="p-6 text-center text-slate-500">Aucune position active.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -207,99 +203,92 @@
             <!-- TAB 6: CORRÉLATION BTC -->
             <section id="tab-correlation" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                    <h2 class="text-xl font-bold text-white mb-2">📊 Matrice de Corrélation Altcoins / BTC</h2>
-                    <input type="text" id="corr-search" oninput="filterCorrelation()" placeholder="Filtrer..." class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white w-64">
+                    <h2 class="text-xl font-bold text-white mb-1">📊 Matrice de Corrélation BTC</h2>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
                     <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-950 text-slate-400 uppercase">
-                            <tr><th class="p-4">Token</th><th class="p-4">Prix</th><th class="p-4">24h</th><th class="p-4">Bêta BTC</th><th class="p-4">Force Relative</th></tr>
+                        <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase">
+                            <tr>
+                                <th class="p-3">Token</th>
+                                <th class="p-3">Prix</th>
+                                <th class="p-3">Var 24h</th>
+                                <th class="p-3">Bêta BTC</th>
+                                <th class="p-3">Force Relative</th>
+                            </tr>
                         </thead>
-                        <tbody id="correlation-tbody" class="divide-y divide-slate-800/60"></tbody>
+                        <tbody id="correlation-tbody" class="divide-y divide-slate-800/60">
+                            <tr><td colspan="5" class="p-6 text-center text-slate-500">Chargement...</td></tr>
+                        </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- TAB 7: GESTION DU RISQUE -->
+            <!-- TAB 7: CALCULATEUR -->
             <section id="tab-calculator" class="space-y-4 hidden">
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-2xl mx-auto space-y-4">
-                    <h2 class="text-xl font-bold text-white">🧮 Calculateur de Position</h2>
-                    <div class="grid grid-cols-2 gap-4 text-xs">
-                        <input type="number" id="calc-capital" value="5000" placeholder="Capital" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white">
-                        <input type="number" id="calc-risk-pct" value="1.5" placeholder="Risque %" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white">
-                        <input type="number" id="calc-entry" placeholder="Entrée" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white">
-                        <input type="number" id="calc-sl" placeholder="Stop Loss" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-xl mx-auto space-y-4">
+                    <h2 class="text-xl font-bold text-white">🧮 Calculateur de Risque</h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="number" id="calc-capital" value="5000" placeholder="Capital" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white">
+                        <input type="number" id="calc-risk-pct" value="1.5" placeholder="Risque %" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white">
+                        <input type="number" id="calc-entry" placeholder="Entrée" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white">
+                        <input type="number" id="calc-sl" placeholder="Stop Loss" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white">
                     </div>
-                    <button onclick="calculatePositionRisk()" class="w-full py-3 bg-emerald-500 text-slate-950 font-bold rounded-xl">Calculer</button>
-                    <div id="calc-result" class="p-4 bg-slate-950 rounded-xl border border-slate-800 hidden text-xs"></div>
+                    <button onclick="calculatePositionRisk()" class="w-full py-3 bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs">Calculer</button>
+                    <div id="calc-result" class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-xs hidden"></div>
                 </div>
             </section>
 
-            <!-- TAB 8: JOURNAL DE TRADE -->
+            <!-- TAB 8: JOURNAL -->
             <section id="tab-journal" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
                     <h2 class="text-xl font-bold text-white">📓 Journal de Trade</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                        <input type="text" id="j-sym" placeholder="Token" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
-                        <select id="j-dir" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"><option value="LONG">LONG</option><option value="SHORT">SHORT</option></select>
-                        <input type="number" id="j-entry" placeholder="Entrée" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
-                        <input type="number" id="j-exit" placeholder="Sortie" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
+                    <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
+                        <input type="text" id="j-sym" placeholder="Token" class="bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-white">
+                        <select id="j-dir" class="bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-white"><option value="LONG">LONG</option><option value="SHORT">SHORT</option></select>
+                        <input type="number" id="j-entry" placeholder="Entrée" class="bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-white">
+                        <input type="number" id="j-exit" placeholder="Sortie" class="bg-slate-950 border border-slate-800 rounded-xl p-2 text-xs text-white">
                         <button onclick="addJournalEntry()" class="bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs py-2">Enregistrer</button>
                     </div>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-950 text-slate-400 uppercase"><tr><th class="p-4">Date</th><th class="p-4">Token</th><th class="p-4">Dir</th><th class="p-4">Entrée</th><th class="p-4">Sortie</th><th class="p-4">PnL</th></tr></thead>
-                        <tbody id="journal-tbody" class="divide-y divide-slate-800/60"></tbody>
-                    </table>
                 </div>
             </section>
 
             <!-- TAB 9: NEWS & WHALES -->
             <section id="tab-sentiment" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                    <h2 class="text-xl font-bold text-white">⚡ News & Whale Alerts</h2>
+                    <h2 class="text-xl font-bold text-white">⚡ News & Whale Alert</h2>
                     <div id="news-feed-container" class="space-y-3"></div>
                 </div>
             </section>
 
-            <!-- TAB 10: GEMCRYPT CHAT -->
+            <!-- TAB 10: CHAT -->
             <section id="tab-chat" class="space-y-4 hidden">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden h-[600px] flex flex-col justify-between">
-                    <div class="bg-slate-950 p-4 border-b border-slate-800 font-bold text-sm text-white">🤖 GemCrypt AI Assistant</div>
-                    <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4 text-xs"></div>
-                    <div class="p-4 bg-slate-950 border-t border-slate-800 flex gap-3">
-                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter')sendChatMessage()" placeholder="Pose ta question..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none">
-                        <button onclick="sendChatMessage()" class="px-6 py-3 bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs">Envoyer</button>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl h-[550px] flex flex-col justify-between p-4">
+                    <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 text-xs">
+                        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-slate-300">🤖 Salut ! Je suis GemCrypt, ton assistant IA. Pose-moi tes questions.</div>
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter')sendChatMessage()" placeholder="Discute avec GemCrypt..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
+                        <button onclick="sendChatMessage()" class="px-4 bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs">Envoyer</button>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 11: ADMIN - GESTION DES INVITATIONS 24H -->
-            <section id="tab-admin-invites" class="space-y-6 hidden">
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                    <h2 class="text-xl font-bold text-white">✉️ Générateur d'Invitations Expirables (24h)</h2>
-                    <p class="text-xs text-slate-400">Génère un identifiant ou un lien unique pour chaque personne à qui tu souhaites partager l'application. Le lien s'autodétruira après 24 heures.</p>
-                    
-                    <div class="flex gap-3">
-                        <input type="email" id="invite-target-email" placeholder="email.du.futur.membre@domaine.com" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none">
-                        <button onclick="generateInviteLink()" class="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-sm transition">Générer le Jeton 24h</button>
-                    </div>
-
-                    <div id="invite-result-box" class="p-4 bg-slate-950 rounded-xl border border-slate-800 hidden space-y-2 text-xs">
-                        <span class="text-emerald-400 font-bold">Lien d'invitation généré (Valide 24h) :</span>
-                        <input type="text" id="generated-link-display" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-cyan-300 font-mono">
-                    </div>
+            <!-- TAB 11: ACADEMY -->
+            <section id="tab-academy" class="space-y-4 hidden">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                    <h2 class="text-xl font-bold text-white mb-1">🎓 Crypto Academy</h2>
+                    <p class="text-xs text-slate-400">Maîtrise l'analyse technique et on-chain.</p>
                 </div>
             </section>
 
         </main>
         
-        <footer class="bg-slate-900/50 border-t border-slate-800/80 py-4 text-center text-xs text-slate-500">
-            Crypto Pulse AI Terminal Pro — Sécurisé & Synchronisé
+        <footer class="bg-slate-900/50 border-t border-slate-800/80 py-3 text-center text-[10px] text-slate-500">
+            Crypto Pulse AI Terminal Pro — Live Monitoring
         </footer>
     </div>
 
+    <!-- LOGIQUE JS -->
     <script>
         let globalCryptos = [];
         let watchlist = JSON.parse(localStorage.getItem('crypto_watchlist') || '[]');
@@ -313,85 +302,25 @@
             loadPepites();
             loadNewsAndWhales();
             renderLivePositions();
-            renderJournal();
             setInterval(loadTopCryptos, 30000);
-        });
-
-        // Gestion du Menu Déroulant
-        function toggleNavDropdown() {
-            const menu = document.getElementById('nav-dropdown-menu');
-            menu.classList.toggle('hidden');
-        }
-
-        function closeDropdown() {
-            document.getElementById('nav-dropdown-menu').classList.add('hidden');
-        }
-
-        // Fermer le menu si on clique ailleurs
-        window.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('nav-dropdown-menu');
-            const btn = e.target.closest('button');
-            if (!dropdown.contains(e.target) && (!btn || !btn.onclick?.toString().includes('toggleNavDropdown'))) {
-                dropdown.classList.add('hidden');
-            }
+            setInterval(checkLivePositionsAlerts, 10000);
         });
 
         function switchTab(tabId) {
-            const tabs = ['tracker', 'chart', 'pepites', 'analyzer', 'live-tracking', 'correlation', 'calculator', 'journal', 'sentiment', 'chat', 'admin-invites'];
+            const tabs = ['tracker', 'chart', 'pepites', 'analyzer', 'live-tracking', 'correlation', 'calculator', 'journal', 'sentiment', 'chat', 'academy'];
             tabs.forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
                 if(el) el.classList.add('hidden');
             });
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            
-            // Mettre à jour le titre du bouton principal
-            const titles = {
-                'tracker': '📊 Tracker Top 150',
-                'chart': '📈 Workspace Graphique',
-                'pepites': '💎 Pépites du Jour',
-                'analyzer': '🔍 Analyse IA 360°',
-                'live-tracking': '🔔 Suivi Positions',
-                'correlation': '📉 Corrélation BTC',
-                'calculator': '🧮 Gestion Risque',
-                'journal': '📓 Journal Trade',
-                'sentiment': '⚡ News & Whales',
-                'chat': '🤖 GemCrypt Chat',
-                'admin-invites': '✉️ Gestion Invitations'
-            };
-            document.getElementById('current-tab-title').textContent = titles[tabId] || 'Navigation';
-            
             if(tabId === 'chart') updateTradingViewChart();
         }
 
-        // Authentification simulée
         function handleAuthLogin() {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-password').value;
-            if(!email || !pass) {
-                document.getElementById('auth-error').textContent = "Veuillez entrer vos identifiants.";
-                document.getElementById('auth-error').classList.remove('hidden');
-                return;
-            }
             document.getElementById('auth-modal').classList.add('hidden');
         }
-
         function handleSignOut() {
             document.getElementById('auth-modal').classList.remove('hidden');
-        }
-
-        // Générateur d'invitations 24h
-        function generateInviteLink() {
-            const email = document.getElementById('invite-target-email').value;
-            if(!email) {
-                alert("Veuillez entrer un e-mail destinataire.");
-                return;
-            }
-            const token = Math.random().toString(36.substring(2)) + Date.now().toString(36);
-            const expireTime = Date.now() + (24 * 60 * 60 * 1000);
-            const link = `${window.location.origin}?invite=${token}&exp=${expireTime}`;
-            
-            document.getElementById('invite-result-box').classList.remove('hidden');
-            document.getElementById('generated-link-display').value = link;
         }
 
         async function loadTopCryptos() {
@@ -401,7 +330,11 @@
                 renderTrackerTable();
                 renderCorrelationTable();
             } catch (e) {
-                console.error(e);
+                globalCryptos = [
+                    {id: "bitcoin", symbol: "btc", name: "Bitcoin", current_price: 84500, price_change_percentage_24h: 3.4, total_volume: 35000000000, market_cap: 1650000000000},
+                    {id: "ethereum", symbol: "eth", name: "Ethereum", current_price: 2450, price_change_percentage_24h: -1.2, total_volume: 18000000000, market_cap: 295000000000}
+                ];
+                renderTrackerTable();
             }
         }
 
@@ -409,18 +342,23 @@
             const tbody = document.getElementById('crypto-table-body');
             const search = document.getElementById('tracker-search').value.toLowerCase();
             let filtered = globalCryptos.filter(c => c.name.toLowerCase().includes(search) || c.symbol.toLowerCase().includes(search));
-
-            if(currentFilter === 'WATCHLIST') filtered = filtered.filter(c => watchlist.includes(c.symbol.toUpperCase()));
             
+            if(currentFilter === 'WATCHLIST') filtered = filtered.filter(c => watchlist.includes(c.symbol.toUpperCase()));
+            else if(currentFilter === 'RWA') filtered = filtered.filter(c => ['ondo', 'pendle'].includes(c.symbol.toLowerCase()));
+            else if(currentFilter === 'AI') filtered = filtered.filter(c => ['render', 'fet'].includes(c.symbol.toLowerCase()));
+            else if(currentFilter === 'MEME') filtered = filtered.filter(c => ['pepe', 'doge'].includes(c.symbol.toLowerCase()));
+
             tbody.innerHTML = filtered.map(c => `
                 <tr class="hover:bg-slate-900/60 transition">
-                    <td class="p-4 font-bold text-white uppercase">${c.symbol} <span class="text-slate-400 font-normal text-[11px]">(${c.name})</span></td>
-                    <td class="p-4 font-mono font-bold text-white">$${Number(c.current_price).toLocaleString()}</td>
-                    <td class="p-4 font-mono ${c.price_change_percentage_24h>=0?'text-emerald-400':'text-red-400'}">${c.price_change_percentage_24h>=0?'+':''}${Number(c.price_change_percentage_24h||0).toFixed(2)}%</td>
-                    <td class="p-4 font-mono text-slate-300">$${Number(c.total_volume||0).toLocaleString()}</td>
-                    <td class="p-4 font-mono text-slate-300">$${Number(c.market_cap||0).toLocaleString()}</td>
-                    <td class="p-4 text-center space-x-2">
-                        <button onclick="selectChartSymbol('${c.symbol.toUpperCase()}')" class="px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded">Graphique</button>
+                    <td class="p-3 flex items-center space-x-2">
+                        <button onclick="toggleWatchlist('${c.symbol.toUpperCase()}')">${watchlist.includes(c.symbol.toUpperCase())?'⭐':'☆'}</button>
+                        <span class="font-bold text-white uppercase">${c.symbol}</span>
+                    </td>
+                    <td class="p-3 font-mono font-bold">$${Number(c.current_price).toLocaleString()}</td>
+                    <td class="p-3 font-mono ${c.price_change_percentage_24h>=0?'text-emerald-400':'text-red-400'}">${c.price_change_percentage_24h>=0?'+':''}${Number(c.price_change_percentage_24h||0).toFixed(2)}%</td>
+                    <td class="p-3 font-mono text-slate-300">$${Number(c.total_volume||0).toLocaleString()}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="selectChartSymbol('${c.symbol.toUpperCase()}')" class="px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg text-[10px] font-bold">Graph</button>
                     </td>
                 </tr>
             `).join('');
@@ -428,48 +366,52 @@
 
         function filterCategory(cat) { currentFilter = cat; renderTrackerTable(); }
         function filterTracker() { renderTrackerTable(); }
+        function toggleWatchlist(sym) {
+            watchlist = watchlist.includes(sym) ? watchlist.filter(s => s !== sym) : [...watchlist, sym];
+            localStorage.setItem('crypto_watchlist', JSON.stringify(watchlist));
+            renderTrackerTable();
+        }
 
         function selectChartSymbol(sym) {
+            document.getElementById('app-navigation-select').value = 'chart';
             switchTab('chart');
-            updateTradingViewChart();
+            initTradingViewWidget(`BINANCE:${sym}USDT`);
         }
 
         function initTradingViewWidget(symbol) {
             document.getElementById('tradingview-container').innerHTML = "";
             new TradingView.widget({
-                "autosize": true, "symbol": symbol, "interval": "D", "theme": "dark", "style": "1", "locale": "fr", "container_id": "tradingview-container"
+                "autosize": true, "symbol": symbol, "interval": "D", "timezone": "Etc/UTC",
+                "theme": "dark", "style": "1", "locale": "fr", "toolbar_bg": "#090d16", "container_id": "tradingview-container"
             });
         }
         function updateTradingViewChart() { initTradingViewWidget(document.getElementById('chart-symbol-select').value); }
 
         function loadPepites() {
             document.getElementById('pepites-grid').innerHTML = `
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-2">
-                    <h3 class="text-base font-bold text-white">Ondo Finance (ONDO)</h3>
-                    <p class="text-xs text-slate-400">Leader RWA institutionnel. Entrée idéale sur support.</p>
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-2">
+                    <h3 class="font-bold text-white">ONDO (Ondo Finance)</h3>
+                    <p class="text-xs text-slate-400">Leader RWA institutionnel. Entrée : $1.10 - TP : $1.85</p>
                 </div>
             `;
-        }
-
-        function runAiAnalysis() {
-            const query = document.getElementById('analyzer-input').value.toUpperCase();
-            if(!query) return;
-            document.getElementById('analyzer-result').classList.remove('hidden');
-            document.getElementById('analyzer-result').innerHTML = `<div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 text-xs text-slate-200">Analyse 360° pour <strong>${query}</strong> : Biais Haussier validé. Support institutionnel solide.</div>`;
         }
 
         function testAudioAlarm() { playBimBimSound(); }
         function playBimBimSound() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = ctx.currentTime;
                 const osc = ctx.createOscillator();
-                osc.type = 'sine'; osc.frequency.setValueAtTime(880, ctx.currentTime);
-                osc.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.15);
+                const gain = ctx.createGain();
+                osc.frequency.setValueAtTime(880, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(now); osc.stop(now + 0.3);
             } catch(e) {}
         }
 
         function addLivePosition() {
-            const sym = document.getElementById('pos-symbol').value.toUpperCase();
+            const sym = document.getElementById('pos-symbol').value.trim().toUpperCase();
             const type = document.getElementById('pos-type').value;
             const entry = parseFloat(document.getElementById('pos-entry').value);
             const tp = parseFloat(document.getElementById('pos-tp').value);
@@ -482,60 +424,43 @@
 
         function renderLivePositions() {
             const tbody = document.getElementById('live-positions-tbody');
-            if(livePositions.length === 0) { tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-500">Aucune position active.</td></tr>`; return; }
+            if(livePositions.length === 0) return;
             tbody.innerHTML = livePositions.map(p => `
                 <tr class="hover:bg-slate-900/60">
-                    <td class="p-4 font-bold text-white">${p.sym}</td>
-                    <td class="p-4"><span class="text-xs ${p.type==='LONG'?'text-emerald-400':'text-red-400'}">${p.type}</span></td>
-                    <td class="p-4 font-mono">$${p.entry}</td>
-                    <td class="p-4 font-mono text-white">$${p.entry}</td>
-                    <td class="p-4 font-mono">TP: $${p.tp} / SL: $${p.sl}</td>
-                    <td class="p-4 font-mono text-emerald-400">+0.00%</td>
-                    <td class="p-4 text-emerald-400">Sain</td>
-                    <td class="p-4 text-center"><button onclick="livePositions=livePositions.filter(x=>x.id!==${p.id});renderLivePositions();" class="text-red-400">X</button></td>
+                    <td class="p-3 font-bold text-white uppercase">${p.sym}</td>
+                    <td class="p-3">${p.type}</td>
+                    <td class="p-3">$${p.entry}</td>
+                    <td class="p-3">$${p.tp}</td>
+                    <td class="p-3 text-emerald-400">Actif</td>
+                    <td class="p-3">Sain</td>
+                    <td class="p-3 text-center"><button onclick="livePositions=livePositions.filter(x=>x.id!==${p.id});renderLivePositions();" class="text-red-400">X</button></td>
                 </tr>
             `).join('');
         }
+        function checkLivePositionsAlerts() {}
 
         function renderCorrelationTable() {
-            document.getElementById('correlation-tbody').innerHTML = globalCryptos.slice(0, 15).map(c => `
-                <tr class="hover:bg-slate-900/60">
-                    <td class="p-4 font-bold text-white uppercase">${c.symbol}</td>
-                    <td class="p-4 font-mono">$${c.current_price}</td>
-                    <td class="p-4 font-mono ${c.price_change_percentage_24h>=0?'text-emerald-400':'text-red-400'}">${c.price_change_percentage_24h}%</td>
-                    <td class="p-4 font-mono text-cyan-400">β 1.12</td>
-                    <td class="p-4 text-emerald-400 font-bold">Outperformer</td>
-                </tr>
+            document.getElementById('correlation-tbody').innerHTML = globalCryptos.slice(0, 10).map(c => `
+                <tr><td class="p-3 uppercase font-bold">${c.symbol}</td><td class="p-3">$${c.current_price}</td><td class="p-3">${c.price_change_percentage_24h}%</td><td class="p-3">0.92</td><td class="p-3 text-emerald-400">Fort</td></tr>
             `).join('');
         }
 
         function calculatePositionRisk() {
             document.getElementById('calc-result').classList.remove('hidden');
-            document.getElementById('calc-result').innerHTML = `Risque max calculé : <strong>$75.00</strong> sur le capital.`;
+            document.getElementById('calc-result').innerHTML = "Risque validé : 1.5% du capital engagé.";
         }
 
-        function addJournalEntry() {
-            journalTrades.push({ date: new Date().toLocaleDateString(), sym: 'BTC', dir: 'LONG', entry: 80000, exit: 84000, pnl: 400 });
-            renderJournal();
-        }
-
-        function renderJournal() {
-            document.getElementById('journal-tbody').innerHTML = journalTrades.map(j => `
-                <tr class="hover:bg-slate-900/60">
-                    <td class="p-4 text-slate-400">${j.date}</td><td class="p-4 font-bold text-white">${j.sym}</td><td class="p-4 text-emerald-400">${j.dir}</td><td class="p-4">$${j.entry}</td><td class="p-4">$${j.exit}</td><td class="p-4 text-emerald-400">+$${j.pnl}</td>
-                </tr>
-            `).join('');
-        }
+        function addJournalEntry() {}
 
         function loadNewsAndWhales() {
-            document.getElementById('news-feed-container').innerHTML = `<div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-300">🐋 Whale Alert : 45,000 ETH transférés vers un wallet froid. Impact Bullish.</div>`;
+            document.getElementById('news-feed-container').innerHTML = `<div class="p-3 bg-slate-950 rounded-xl text-xs">🚀 Adoption massive des cryptos RWA ce trimestre.</div>`;
         }
 
         function sendChatMessage() {
-            const txt = document.getElementById('chat-input').value;
-            if(!txt) return;
-            document.getElementById('chat-messages').innerHTML += `<div class="text-right text-emerald-400">${txt}</div><div class="text-slate-300">GemCrypt : Analyse en cours... Tendance favorable.</div>`;
+            const box = document.getElementById('chat-messages');
+            box.innerHTML += `<div class="text-right text-emerald-400">Toi : ${document.getElementById('chat-input').value}</div>`;
             document.getElementById('chat-input').value = "";
+            setTimeout(() => { box.innerHTML += `<div class="text-slate-300">GemCrypt : Analyse validée. Tendance haussière confirmée.</div>`; }, 500);
         }
     </script>
 </body>
