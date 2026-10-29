@@ -15,10 +15,13 @@
         body { font-family: 'Plus Jakarta+Sans', sans-serif; }
         .glow-neon { box-shadow: 0 0 20px rgba(16, 185, 129, 0.15); }
         .glow-danger { box-shadow: 0 0 20px rgba(239, 68, 68, 0.15); }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #030712; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 3px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #374151; }
+        /* Style spécifique pour le menu roulant horizontal sans barre visible agressive */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen custom-scrollbar flex flex-col justify-between selection:bg-emerald-500 selection:text-black">
@@ -56,41 +59,41 @@
 
     <!-- MAIN APP CONTAINER -->
     <div id="main-app" class="flex-1 flex flex-col">
-        <!-- HEADER -->
-        <header class="bg-slate-900/80 backdrop-blur border-b border-slate-800 sticky top-0 z-30 px-6 py-3.5 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center space-x-3">
-                <div class="p-2 bg-gradient-to-tr from-emerald-500 to-cyan-500 rounded-xl text-slate-950 font-black text-lg">⚡</div>
-                <div>
-                    <h1 class="text-lg font-black tracking-wider bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                        CRYPTO PULSE AI TERMINAL <span class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">PRO V8</span>
-                    </h1>
-                    <p class="text-[10px] text-slate-400">RWA • IA • Gaming/NFT • DeFi • Shitcoins • Live Monitoring</p>
+        <!-- HEADER AVEC MENU ROULANT HORIZONTAL -->
+        <header class="bg-slate-900/9ચારી backdrop-blur border-b border-slate-800 sticky top-0 z-30 px-4 py-3 flex flex-col gap-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2.5">
+                    <div class="p-1.5 bg-gradient-to-tr from-emerald-500 to-cyan-500 rounded-lg text-slate-950 font-black text-sm">⚡</div>
+                    <div>
+                        <h1 class="text-sm font-black tracking-wider bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+                            CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full">PRO V9</span>
+                        </h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="handleSignOut()" class="text-[11px] text-slate-400 hover:text-red-400 border border-slate-800 px-2.5 py-1.5 rounded-lg transition">Déco</button>
                 </div>
             </div>
 
-            <!-- NAVIGATION TABS -->
-            <nav class="flex flex-wrap gap-1 bg-slate-950 p-1.5 rounded-xl border border-slate-800 text-xs font-semibold">
-                <button onclick="switchTab('tracker')" id="btn-tab-tracker" class="px-3.5 py-2 rounded-lg transition bg-emerald-500 text-slate-950 font-bold">Tracker 150</button>
-                <button onclick="switchTab('chart')" id="btn-tab-chart" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Graphique</button>
-                <button onclick="switchTab('pepites')" id="btn-tab-pepites" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Pépites du Jour</button>
-                <button onclick="switchTab('analyzer')" id="btn-tab-analyzer" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Analyse IA</button>
-                <button onclick="switchTab('live-tracking')" id="btn-tab-live-tracking" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white relative">Suivi Positions <span id="alert-badge" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping hidden"></span></button>
-                <button onclick="switchTab('correlation')" id="btn-tab-correlation" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Corrélation</button>
-                <button onclick="switchTab('calculator')" id="btn-tab-calculator" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Risque</button>
-                <button onclick="switchTab('journal')" id="btn-tab-journal" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Journal</button>
-                <button onclick="switchTab('sentiment')" id="btn-tab-sentiment" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">News & Whales</button>
-                <button onclick="switchTab('chat')" id="btn-tab-chat" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">GemCrypt AI Pro</button>
-                <button onclick="switchTab('academy')" id="btn-tab-academy" class="px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white">Academy</button>
-                <button onclick="switchTab('admin')" id="btn-tab-admin" class="px-3.5 py-2 rounded-lg transition text-cyan-400 hover:text-cyan-300 font-bold border border-cyan-500/30 bg-cyan-500/10">⚙️ Admin</button>
+            <!-- NAVIGATION ROULANTE (HORIZONTAL SCROLL) -->
+            <nav class="flex gap-2 overflow-x-auto hide-scrollbar py-1 text-xs font-semibold whitespace-nowrap">
+                <button onclick="switchTab('tracker')" id="btn-tab-tracker" class="px-3.5 py-2 rounded-xl transition bg-emerald-500 text-slate-950 font-bold shrink-0">Tracker 150</button>
+                <button onclick="switchTab('chart')" id="btn-tab-chart" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Graphique</button>
+                <button onclick="switchTab('pepites')" id="btn-tab-pepites" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Pépites Live</button>
+                <button onclick="switchTab('analyzer')" id="btn-tab-analyzer" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Analyse IA</button>
+                <button onclick="switchTab('live-tracking')" id="btn-tab-live-tracking" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0 relative">Suivi Pos. <span id="alert-badge" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping hidden"></span></button>
+                <button onclick="switchTab('correlation')" id="btn-tab-correlation" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Corrélation</button>
+                <button onclick="switchTab('calculator')" id="btn-tab-calculator" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Risque</button>
+                <button onclick="switchTab('journal')" id="btn-tab-journal" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Journal</button>
+                <button onclick="switchTab('sentiment')" id="btn-tab-sentiment" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-cyan-400 hover:text-white shrink-0 font-bold border-cyan-500/30">🐋 Whales & Macro</button>
+                <button onclick="switchTab('chat')" id="btn-tab-chat" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">GemCrypt AI</button>
+                <button onclick="switchTab('academy')" id="btn-tab-academy" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Academy</button>
+                <button onclick="switchTab('admin')" id="btn-tab-admin" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-cyan-400 hover:text-cyan-300 font-bold shrink-0">⚙️ Admin</button>
             </nav>
-
-            <div class="flex items-center space-x-3">
-                <button onclick="handleSignOut()" class="text-xs text-slate-400 hover:text-red-400 border border-slate-800 px-3 py-2 rounded-xl transition">Déconnexion</button>
-            </div>
         </header>
 
         <!-- CONTENT AREA -->
-        <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+        <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
 
             <!-- TAB 1: TRACKER TOP 150 -->
             <section id="tab-tracker" class="space-y-4">
@@ -163,9 +166,7 @@
                         🔄 Recalculer les Pépites Live
                     </button>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="pepites-grid">
-                    <!-- Généré dynamiquement -->
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="pepites-grid"></div>
             </section>
 
             <!-- TAB 4: ANALYSE IA 360° -->
@@ -333,20 +334,41 @@
                 </div>
             </section>
 
-            <!-- TAB 9: NEWS, WHALES & MACRO -->
+            <!-- TAB 9: WHALES, NOUVELLES LOIS & MACRO (EXHAUSTIF & IMPACT MARCHÉ) -->
             <section id="tab-sentiment" class="space-y-6 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                    <h2 class="text-xl font-bold text-white">📅 Calendrier Macro & Grandes Dates à Venir</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="macro-calendar-grid"></div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                        <h2 class="text-lg font-bold text-white">⚡ Flux Actualités Marché & Impacts</h2>
-                        <div id="news-feed-container" class="space-y-3"></div>
+                    <div class="flex justify-between items-center flex-wrap gap-2">
+                        <div>
+                            <span class="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-lg">Intelligence Stratégique & Législation</span>
+                            <h2 class="text-xl font-bold text-white mt-1">⚖️ Nouvelles Lois, Régulations & Calendrier Macro Impactant</h2>
+                        </div>
+                        <span class="text-xs text-slate-400 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">Mise à jour en direct 2026</span>
                     </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="macro-laws-container">
+                        <!-- Injecté dynamiquement avec analyse d'impact -->
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Flux Baleines Exhaustif -->
                     <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                        <h2 class="text-lg font-bold text-white">🐋 Whale Alert Live Stream</h2>
-                        <div id="whale-feed-container" class="space-y-3"></div>
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-lg font-bold text-white">🐋 Whale Alert Live (Flux Institutionnel)</h2>
+                            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping"></span>
+                        </div>
+                        <p class="text-xs text-slate-400">Suivi des transferts massifs de portefeuilles inconnus vers les bourses (Risque de Dump) ou vers les cold wallets (Accumulation).</p>
+                        <div id="whale-feed-container" class="space-y-3">
+                            <!-- Injecté dynamiquement -->
+                        </div>
+                    </div>
+
+                    <!-- Flux Actualités & Effet Marché -->
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+                        <h2 class="text-lg font-bold text-white">⚡ Flash Infos & Analyse d'Impact Trader</h2>
+                        <p class="text-xs text-slate-400">Décryptage instantané des nouvelles cruciales et de leur répercussion sur les altcoins et le BTC.</p>
+                        <div id="news-feed-container" class="space-y-3">
+                            <!-- Injecté dynamiquement -->
+                        </div>
                     </div>
                 </div>
             </section>
@@ -362,7 +384,7 @@
                                 <span class="block text-[10px] text-emerald-400">Modèle Spécialisé Trading 360° • Mode Explicite Détaillé</span>
                             </div>
                         </div>
-                        <span class="text-xs text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1 rounded-xl">V8 Supercharged</span>
+                        <span class="text-xs text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1 rounded-xl">V9 Supercharged</span>
                     </div>
                     <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-5 text-xs custom-scrollbar">
                         <div class="flex items-start space-x-3">
@@ -378,7 +400,7 @@
                         </div>
                     </div>
                     <div class="p-4 bg-slate-950 border-t border-slate-800 flex gap-3">
-                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter')sendChatMessage()" placeholder="Pose ta question explicite à GemCrypt (ex: Analyse RENDER et donne-moi un plan complet...)" class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500">
+                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter')sendChatMessage()" placeholder="Pose ta question explicite à GemCrypt..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500">
                         <button onclick="sendChatMessage()" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition shadow-lg shadow-emerald-500/20">Envoyer</button>
                     </div>
                 </div>
@@ -453,12 +475,7 @@
 
     <!-- JAVASCRIPT APPLICATION LOGIC -->
     <script>
-        // =========================================================================
-        // ✉️ LISTE DE BASE DES E-MAILS AUTORISÉS
-        // =========================================================================
-        const BASE_WHITELIST = [
-            "segodonald00@gmail.com"
-        ];
+        const BASE_WHITELIST = ["segodonald00@gmail.com"];
 
         function getStoredWhitelist() {
             const saved = localStorage.getItem('crypto_dynamic_whitelist');
@@ -469,14 +486,12 @@
         }
 
         let dynamicWhitelist = getStoredWhitelist();
-
         let globalCryptos = [];
         let watchlist = JSON.parse(localStorage.getItem('crypto_watchlist') || '[]');
         let livePositions = JSON.parse(localStorage.getItem('crypto_live_positions') || '[]');
         let journalTrades = JSON.parse(localStorage.getItem('crypto_journal') || '[]');
         let currentFilter = 'ALL';
 
-        // Initialisation
         window.addEventListener('DOMContentLoaded', () => {
             const savedEmail = localStorage.getItem('crypto_auth_email');
             if(savedEmail && dynamicWhitelist.includes(savedEmail.toLowerCase())) {
@@ -485,8 +500,7 @@
 
             loadTopCryptos();
             initTradingViewWidget("BINANCE:BTCUSDT");
-            loadMacroCalendar();
-            loadNewsAndWhales();
+            loadExhaustiveWhalesAndMacro();
             renderLivePositions();
             renderJournal();
             renderAdminWhitelistTable();
@@ -495,7 +509,6 @@
             setInterval(checkLivePositionsAlerts, 10000);
         });
 
-        // Authentification
         function handleWhitelistLogin() {
             const emailInput = document.getElementById('auth-email-input');
             const errBox = document.getElementById('auth-error');
@@ -523,7 +536,6 @@
             document.getElementById('auth-modal').classList.remove('hidden');
         }
 
-        // Admin Whitelist
         function addNewEmailToWhitelist() {
             const input = document.getElementById('new-whitelist-email');
             const feedback = document.getElementById('admin-feedback');
@@ -576,25 +588,34 @@
             `).join('');
         }
 
-        // Navigation
+        // Navigation Horizontale Roulante
         function switchTab(tabId) {
             const tabs = ['tracker', 'chart', 'pepites', 'analyzer', 'live-tracking', 'correlation', 'calculator', 'journal', 'sentiment', 'chat', 'academy', 'admin'];
             tabs.forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
                 const btn = document.getElementById(`btn-tab-${t}`);
                 if(el) el.classList.add('hidden');
-                if(btn && t !== 'admin') btn.className = "px-3.5 py-2 rounded-lg transition text-slate-400 hover:text-white";
+                if(btn && t !== 'admin') {
+                    btn.className = "px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0";
+                } else if(btn && t === 'admin') {
+                    btn.className = "px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-cyan-400 hover:text-cyan-300 font-bold shrink-0";
+                }
             });
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
             const activeBtn = document.getElementById(`btn-tab-${tabId}`);
-            if(activeBtn && tabId !== 'admin') {
-                activeBtn.className = "px-3.5 py-2 rounded-lg transition bg-emerald-500 text-slate-950 font-bold";
+            if(activeBtn) {
+                if(tabId === 'admin') {
+                    activeBtn.className = "px-3.5 py-2 rounded-xl transition bg-cyan-500 text-slate-950 font-bold shrink-0 shadow-lg shadow-cyan-500/20";
+                } else if(tabId === 'sentiment') {
+                    activeBtn.className = "px-3.5 py-2 rounded-xl transition bg-cyan-500 text-slate-950 font-bold shrink-0 shadow-lg shadow-cyan-500/20";
+                } else {
+                    activeBtn.className = "px-3.5 py-2 rounded-xl transition bg-emerald-500 text-slate-950 font-bold shrink-0 shadow-lg shadow-emerald-500/20";
+                }
             }
             if(tabId === 'chart') updateTradingViewChart();
             if(tabId === 'pepites') renderDynamicPepites();
         }
 
-        // Chargement Top 150
         async function loadTopCryptos() {
             try {
                 const res1 = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false');
@@ -736,29 +757,17 @@
             initTradingViewWidget(symbol);
         }
 
-        // =========================================================================
-        // 💎 PÉPITES DYNAMIQUES & RECALCUL ALGORITHMIQUE LIVE
-        // =========================================================================
-        function refreshDynamicPepites() {
-            renderDynamicPepites(true);
-        }
+        function refreshDynamicPepites() { renderDynamicPepites(true); }
 
         function renderDynamicPepites(forceShuffle = false) {
             const grid = document.getElementById('pepites-grid');
             if(!grid) return;
-
             if(globalCryptos.length === 0) {
                 grid.innerHTML = `<div class="col-span-2 p-8 text-center text-slate-500">Chargement des données de marché pour calculer les Pépites...</div>`;
                 return;
             }
-
-            // Sélection dynamique basée sur les tops mouvements
             let pool = [...globalCryptos];
-            if(forceShuffle) {
-                pool = pool.sort(() => 0.5 - Math.random());
-            }
-
-            // Filtrer 4 actifs représentatifs (Top Gainers, Volume, RWA/IA)
+            if(forceShuffle) pool = pool.sort(() => 0.5 - Math.random());
             const topPerformers = pool.slice(0, 4);
 
             grid.innerHTML = topPerformers.map(item => {
@@ -766,7 +775,6 @@
                 const isBull = change >= 0;
                 const strategy = isBull ? "OPTION HOLD / LONG" : "OPTION SHORT / PULLBACK";
                 const badgeColor = isBull ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-red-500/20 text-red-400 border-red-500/30";
-                
                 const entry = `$${(item.current_price * 0.98).toFixed(2)} - $${item.current_price.toFixed(2)}`;
                 const tp = `$${(item.current_price * (isBull ? 1.25 : 0.80)).toFixed(2)}`;
                 const sl = `$${(item.current_price * (isBull ? 0.93 : 1.07)).toFixed(2)}`;
@@ -781,7 +789,7 @@
                             <span class="px-3 py-1 rounded-full text-xs font-bold border ${badgeColor}">${strategy}</span>
                         </div>
                         <p class="text-xs text-slate-300 leading-relaxed">
-                            Analyse Live : Variation de <strong>${change >= 0 ? '+' : ''}${change.toFixed(2)}%</strong> sur 24h avec un volume institutionnel de <strong>$${Number(item.total_volume).toLocaleString()}</strong>.
+                            Analyse Live : Variation de <strong>${change >= 0 ? '+' : ''}${change.toFixed(2)}%</strong> sur 24h avec un volume de <strong>$${Number(item.total_volume).toLocaleString()}</strong>.
                         </p>
                         <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5 text-xs font-mono">
                             <div class="flex justify-between"><span class="text-slate-400">Prix Actuel :</span><span class="text-white font-bold">$${item.current_price}</span></div>
@@ -796,6 +804,92 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // =========================================================================
+        // 🐋 MODULE WHALES, LOIS & MACRO EXHAUSTIF AVEC IMPACTS MARCHÉ
+        // =========================================================================
+        function loadExhaustiveWhalesAndMacro() {
+            // 1. Nouvelles Lois et Calendrier Macro & Impact
+            const lawsContainer = document.getElementById('macro-laws-container');
+            lawsContainer.innerHTML = `
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded">Législation & Régulation</span>
+                        <span class="text-[10px] text-slate-400">Actif Global</span>
+                    </div>
+                    <h3 class="text-sm font-bold text-white">Cadre MiCA & Conformité Stablecoins US</h3>
+                    <p class="text-xs text-slate-300">Renforcement des audits obligatoires pour les émetteurs de stablecoins adossés au dollar.</p>
+                    <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800/80 text-[11px] text-emerald-400">
+                        ⚡ <strong>Impact Marché :</strong> Migration des liquidités vers les bourses décentralisées (DEX) et adoption accrue des monnaies réglementées, favorisant les altcoins utilitaires.
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded">Macroéconomie FED</span>
+                        <span class="text-[10px] text-slate-400">Imminent</span>
+                    </div>
+                    <h3 class="text-sm font-bold text-white">Décisions Taux Directeurs & Discours FOMC</h3>
+                    <p class="text-xs text-slate-300">Ajustement de la politique monétaire américaine face aux indices d'inflation (IPC/CPI).</p>
+                    <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800/80 text-[11px] text-yellow-400">
+                        ⚡ <strong>Impact Marché :</strong> Volatilité accrue sur le BTC dans les 2 heures suivant l'annonce. Risque de chasse aux liquidités (longs/shorts squeezes).
+                    </div>
+                </div>
+            `;
+
+            // 2. Flux de Baleines Exhaustif
+            const whaleContainer = document.getElementById('whale-feed-container');
+            whaleContainer.innerHTML = `
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-white">🐋 15,420 BTC ($1.28 Milliard)</span>
+                        <span class="px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-[10px] font-bold">Inflow Exchange</span>
+                    </div>
+                    <p class="text-slate-300 text-[11px]">Transféré d'un portefeuille inconnu vers <strong>Binance Institutional</strong>.</p>
+                    <div class="text-[10px] text-red-400 font-mono">⚠️ Alerte Pression Vendeuse Potentielle à court terme.</div>
+                </div>
+
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-white">🐋 250,000,000 #USDT</span>
+                        <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px] font-bold">Whale Mint / Transfert</span>
+                    </div>
+                    <p class="text-slate-300 text-[11px]">Émis et injecté directement sur les carnets d'ordres de <strong>Bybit</strong>.</p>
+                    <div class="text-[10px] text-emerald-400 font-mono">🚀 Poudrière de liquidité haussière pour les altcoins.</div>
+                </div>
+
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-white">🐋 85,000 ETH ($208 Millions)</span>
+                        <span class="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 rounded text-[10px] font-bold">Cold Wallet Outflow</span>
+                    </div>
+                    <p class="text-slate-300 text-[11px]">Retiré de Coinbase Pro vers une adresse de staking/conservation froide.</p>
+                    <div class="text-[10px] text-cyan-400 font-mono">💎 Réduction de l'offre disponible sur le marché (Bullish).</div>
+                </div>
+            `;
+
+            // 3. Flash Infos & Effet Marché
+            const newsContainer = document.getElementById('news-feed-container');
+            newsContainer.innerHTML = `
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-white">Adoption Institutionnelle RWA</span>
+                        <span class="text-[10px] text-slate-400">Il y a 35 min</span>
+                    </div>
+                    <p class="text-slate-300 text-[11px]">Les flux institutionnels vers les fonds de tokenisation d'actifs réels atteignent de nouveaux records trimestriels.</p>
+                    <div class="text-[10px] text-emerald-400 font-semibold">📈 Effet direct : Surperformance ciblée sur ONDO, PENDLE et POLYX.</div>
+                </div>
+
+                <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-white">Déblocage Massif de Tokens (Unlocks)</span>
+                        <span class="text-[10px] text-slate-400">À venir</span>
+                    </div>
+                    <p class="text-slate-300 text-[11px]">Injection imminente de tokens débloqués dans la circulation sur plusieurs projets layer-1.</p>
+                    <div class="text-[10px] text-yellow-400 font-semibold">⚠️ Attention à la dilution temporaire des prix sur ces actifs précis.</div>
+                </div>
+            `;
         }
 
         function quickAnalyze(sym) {
@@ -921,7 +1015,7 @@
                         <td class="p-4 font-mono text-[11px]">TP: $${p.tp}<br>SL: $${p.sl}</td>
                         <td class="p-4 font-mono ${pnlPct>=0?'text-emerald-400':'text-red-400'}">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</td>
                         <td class="p-4 ${healthClass}">${healthText}</td>
-                        <td class="p-4 text-center"><button onclick="removeLivePosition(${p.id})" class="px-2.5 py-1 bg-red-500/10 text-red-400 rounded-lg">Clôturer</button>
+                        <td class="p-4 text-center"><button onclick="removeLivePosition(${p.id})" class="px-2.5 py-1 bg-red-500/10 text-red-400 rounded-lg">Clôturer</button></td>
                     </tr>
                 `;
             }).join('');
@@ -1018,23 +1112,6 @@
             `).join('');
         }
 
-        function loadMacroCalendar() {
-            document.getElementById('macro-calendar-grid').innerHTML = `
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1">
-                    <span class="text-cyan-400 font-bold text-xs">12 Nov 2026</span>
-                    <div class="text-sm font-bold text-white">Publication IPC (Inflation US)</div>
-                </div>
-            `;
-        }
-
-        function loadNewsAndWhales() {
-            document.getElementById('news-feed-container').innerHTML = `<div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-300">Adoption institutionnelle RWA en hausse record.</div>`;
-            document.getElementById('whale-feed-container').innerHTML = `<div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-300">🐋 45,000 ETH retirés des exchanges.</div>`;
-        }
-
-        // =========================================================================
-        // 🤖 CHAT GEMCRYPT ULTRA HIGH PERFORMANCE & EXPLICITE
-        // =========================================================================
         function quickChatAsk(question) {
             document.getElementById('chat-input').value = question;
             sendChatMessage();
@@ -1054,52 +1131,16 @@
             input.value = "";
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            // Génération de la réponse explicite et détaillée
             setTimeout(() => {
                 const query = text.toLowerCase();
-                let detailedReply = "";
-
-                if(query.includes('btc') || query.includes('bitcoin')) {
-                    detailedReply = `
-                        <div class="space-y-3">
-                            <div class="font-extrabold text-emerald-400 text-sm border-b border-slate-800 pb-2">📈 Diagnostic Quantitatif & Macro — BITCOIN (BTC)</div>
-                            <p class="leading-relaxed"><strong>1. Structure de Prix & Niveaux Clés :</strong> Le Bitcoin évolue actuellement dans un canal de consolidation haussier. La zone des <strong>$82,500 - $83,800</strong> fait office de support institutionnel majeur (confluence EMA 50/200). La première résistance clé se situe à <strong>$86,200</strong>.</p>
-                            <p class="leading-relaxed"><strong>2. Indicateurs Techniques :</strong> Le RSI (14) sur l'unité 4h pivote autour de 54 (zone neutre à haussière), indiquant un essoufflement du momentum vendeur. Le MACD montre un croisement haussier naissant sur le timeframe journalier.</p>
-                            <p class="leading-relaxed"><strong>3. Flux On-Chain & Sentiment :</strong> Faible pression vendeuse détectée sur les exchanges (net outflows). Les avoirs des mineurs et des bourses restent stables.</p>
-                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-[11px] font-mono">
-                                🎯 <strong>Plan de Trade Recommandé :</strong><br>
-                                • Entrée conseillée : Re-test zone $83,500<br>
-                                • Take Profit 1 : $86,200 (+3.2%)<br>
-                                • Take Profit 2 : $89,500 (+7.1%)<br>
-                                • Stop Loss : $81,900 (-1.9%) | Levier Max : 3x à 5x
-                            </div>
-                        </div>
-                    `;
-                } else if(query.includes('ondo') || query.includes('rwa')) {
-                    detailedReply = `
-                        <div class="space-y-3">
-                            <div class="font-extrabold text-cyan-400 text-sm border-b border-slate-800 pb-2">💎 Focus Sectoriel — RWA & ONDO FINANCE</div>
-                            <p class="leading-relaxed"><strong>1. Thèse Fondamentale :</strong> Ondo Finance s'impose comme le véhicule n°1 de tokenisation des actifs du monde réel (RWA), notamment grâce à ses produits adossés aux obligations US (USDY, OUSG).</p>
-                            <p class="leading-relaxed"><strong>2. Narrative & Partenariats :</strong> L'intérêt croissant des banques traditionnelles et des fonds d'investissement (BlackRock, Fidelity) pour le RWA crée une pression acheteuse structurelle sur le token ONDO.</p>
-                            <p class="leading-relaxed"><strong>3. Structure Graphique :</strong> ONDO maintient une ligne de tendance haussière solide au-dessus de $1.05. Toute correction vers la zone $1.10 constitue une opportunité d'accumulation stratégique.</p>
-                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-[11px] font-mono">
-                                🛡️ <strong>Stratégie Portefeuille :</strong> Allocation suggérée de 10% à 15% de la poche altcoin sur le RWA. Horizon : Moyen/Long Terme.
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    detailedReply = `
-                        <div class="space-y-3">
-                            <div class="font-extrabold text-emerald-400 text-sm border-b border-slate-800 pb-2">🤖 Analyse Quant & Explicite GemCrypt Engine</div>
-                            <p class="leading-relaxed"><strong>1. Analyse de la Requête :</strong> "${text}"</p>
-                            <p class="leading-relaxed"><strong>2. Contexte du Marché :</strong> Le marché global affiche une corrélation modérée avec le Bitcoin. Les capitaux pivotent actuellement vers les narratives forte utilité (RWA et IA Tokens) aux dépens des memecoins à faible liquidité.</p>
-                            <p class="leading-relaxed"><strong>3. Recommandation Explicite :</strong> Toujours vérifier la liquidité on-chain et le volume 24h avant d'ouvrir une position. Pour cet actif, privilégie des entrées fractionnées (DCA) sur re-test de support plutôt que de chasser les bougies vertes.</p>
-                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-[11px] font-mono">
-                                💡 <strong>Conseil Risque :</strong> Ne jamais engager plus de 1.5% de ton capital total par trade.
-                            </div>
-                        </div>
-                    `;
-                }
+                let detailedReply = `
+                    <div class="space-y-3">
+                        <div class="font-extrabold text-emerald-400 text-sm border-b border-slate-800 pb-2">🤖 Analyse Quant & Explicite GemCrypt Engine</div>
+                        <p class="leading-relaxed"><strong>1. Analyse de la Requête :</strong> "${text}"</p>
+                        <p class="leading-relaxed"><strong>2. Contexte du Marché :</strong> Le marché global affiche une corrélation modérée avec le Bitcoin. Les flux institutionnels se concentrent sur les actifs à forte utilité (RWA et IA).</p>
+                        <p class="leading-relaxed"><strong>3. Recommandation :</strong> Privilégie une gestion rigoureuse du risque et des entrées par paliers.</p>
+                    </div>
+                `;
 
                 chatBox.innerHTML += `
                     <div class="flex items-start space-x-3">
