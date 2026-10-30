@@ -55,7 +55,7 @@
                     <div class="p-1.5 bg-gradient-to-tr from-emerald-500 to-cyan-500 rounded-lg text-slate-950 font-black text-sm">⚡</div>
                     <div>
                         <h1 class="text-sm font-black tracking-wider bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                            CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full">RT V17</span>
+                            CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full">RT V17.1</span>
                         </h1>
                     </div>
                 </div>
@@ -234,7 +234,7 @@
         </main>
     </div>
 
-    <!-- JAVASCRIPT LOGIC V17 WEBSOCKETS & PUSH -->
+    <!-- JAVASCRIPT LOGIC V17.1 -->
     <script>
         const SUPABASE_URL = "https://qiggqcqmaorbpugxmmga.supabase.co";
         const SUPABASE_ANON_KEY = "Sb_publishable_A0JrgbkCxzpZvQG3htKuPA_WJM48MsV";
@@ -249,7 +249,7 @@
         let globalCryptos = [];
         let livePrices = {};
         let cloudPositions = [];
-        let currentUserEmail = localStorage.getItem('crypto_auth_email'] || "";
+        let currentUserEmail = localStorage.getItem('crypto_auth_email') || "";
         let ws;
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -330,9 +330,6 @@
             if(tabId === 'pepites') renderDynamicPepites();
         }
 
-        // =========================================================================
-        // ⚡ BINANCE WEBSOCKETS EN TEMPS RÉEL (PRIX MILLISECONDE)
-        // =========================================================================
         function initBinanceWebSocket() {
             const streams = "btcusdt@ticker/ethusdt@ticker/solusdt@ticker/xrpusdt@ticker/adausdt@ticker/dogeusdt@ticker/avaxusdt@ticker/linkusdt@ticker";
             ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
@@ -352,15 +349,12 @@
                     const symbol = ticker.s.replace('USDT', '').toUpperCase();
                     const price = parseFloat(ticker.c);
                     livePrices[symbol] = price;
-
-                    // Mise à jour en direct des positions cloud si concernées
                     checkPositionAlertsAndPnL(symbol, price);
                 }
             };
 
-            ws.onerror = () => {};
             ws.onclose = () => {
-                setTimeout(initBinanceWebSocket, 5000); // Reconnexion automatique
+                setTimeout(initBinanceWebSocket, 5000);
             };
         }
 
