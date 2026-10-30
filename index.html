@@ -219,7 +219,7 @@
                 </div>
             </section>
 
-            <!-- AUTRES ONGLETS -->
+            <!-- AUTRES ONGLETS (RISQUE, JOURNAL, ACADEMY, ADMIN) -->
             <section id="tab-calculator" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl text-white">Calculateur de risque</div></section>
             <section id="tab-journal" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl text-white">Journal de trade</div></section>
             <section id="tab-academy" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl text-white">Academy</div></section>
@@ -231,10 +231,10 @@
     <!-- JAVASCRIPT LOGIC V16 SUPABASE -->
     <script>
         // =========================================================================
-        // 🔑 CONFIGURATION SUPABASE (Intégrée avec tes vraies clés)
+        // 🔑 CONFIGURATION SUPABASE (Remplace par tes clés de ton projet Supabase)
         // =========================================================================
-        const SUPABASE_URL = "https://qiggqcqmaorbpugxmmga.supabase.co";
-        const SUPABASE_ANON_KEY = "Sb_publishable_A0JrgbkCxzpZvQG3htKuPA_WJM48MsV";
+        const SUPABASE_URL = "MET_ICI_TON_URL_SUPABASE";       // Ex: https://xyzabc.supabase.co
+        const SUPABASE_ANON_KEY = "MET_ICI_TA_CLE_ANON_PUBLIC"; // Ex: eyJhbGci...
 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -278,7 +278,7 @@
 
         function handleSignOut() {
             localStorage.removeItem('crypto_auth_email');
-            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('auth-modal').classList.remove('hidden');
         }
 
         function switchTab(tabId) {
@@ -305,6 +305,9 @@
             } catch(e) {}
         }
 
+        // =========================================================================
+        // ☁️ GESTION CLOUD SUPABASE (POSITIONS)
+        // =========================================================================
         async function loadCloudPositions() {
             try {
                 const { data, error } = await supabaseClient.from('live_positions').select('*');
