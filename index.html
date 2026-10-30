@@ -55,7 +55,7 @@
                     <div class="p-1.5 bg-gradient-to-tr from-emerald-500 to-cyan-500 rounded-lg text-slate-950 font-black text-sm">⚡</div>
                     <div>
                         <h1 class="text-sm font-black tracking-wider bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                            CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full">CLOUD V16.1</span>
+                            CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full">CLOUD V16.2</span>
                         </h1>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
             <!-- NAVIGATION ROULANTE (HORIZONTAL SCROLL) -->
             <nav class="flex gap-2 overflow-x-auto hide-scrollbar py-1 text-xs font-semibold whitespace-nowrap">
                 <button onclick="switchTab('bubbles')" id="btn-tab-bubbles" class="px-3.5 py-2 rounded-xl transition bg-emerald-500 text-slate-950 font-bold shrink-0">🫧 Crypto Bubbles</button>
-                <button onclick="switchTab('tracker')" id="btn-tab-tracker" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">📊 CoinMarketCap</button>
+                <button onclick="switchTab('tracker')" id="btn-tab-tracker" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">📊 Marché Pro</button>
                 <button onclick="switchTab('chart')" id="btn-tab-chart" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Graphique</button>
                 <button onclick="switchTab('pepites')" id="btn-tab-pepites" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">💎 8 Pépites Pro</button>
                 <button onclick="switchTab('analyzer')" id="btn-tab-analyzer" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Analyseur Pro 360°</button>
@@ -96,16 +96,35 @@
                 </div>
             </section>
 
-            <!-- TAB 2: COINMARKETCAP INTÉGRÉ -->
+            <!-- TAB 2: MARCHÉ PRO (TABLEAU FLUIDE SANS BLOCAGE) -->
             <section id="tab-tracker" class="space-y-4 hidden">
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex justify-between items-center">
-                    <div>
-                        <h2 class="text-lg font-bold text-white">📊 Classement Global CoinMarketCap Live</h2>
-                        <p class="text-xs text-slate-400">Données officielles en direct du marché mondial.</p>
+                <div class="flex flex-wrap justify-between items-center gap-4 bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+                    <input type="text" id="tracker-search" oninput="filterTracker()" placeholder="Rechercher un token (ex: BTC, ETH)..." class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white w-72 focus:outline-none focus:border-emerald-500">
+                    <div class="flex gap-1.5 text-xs">
+                        <button onclick="filterCategory('ALL')" class="cat-btn px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold">Tous</button>
+                        <button onclick="filterCategory('RWA')" class="cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">RWA</button>
+                        <button onclick="filterCategory('AI')" class="cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">IA</button>
+                        <button onclick="filterCategory('WATCHLIST')" class="cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-yellow-400">⭐ Watchlist</button>
                     </div>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden h-[650px] shadow-2xl">
-                    <iframe src="https://coinmarketcap.com" class="w-full h-full border-0"></iframe>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase font-semibold">
+                                <tr>
+                                    <th class="p-4">Token</th>
+                                    <th class="p-4">Prix (USD)</th>
+                                    <th class="p-4">24h Change</th>
+                                    <th class="p-4">Volume 24h</th>
+                                    <th class="p-4">Market Cap</th>
+                                    <th class="p-4 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="crypto-table-body" class="divide-y divide-slate-800/60">
+                                <tr><td colspan="6" class="p-8 text-center text-slate-500">Chargement des données du marché...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
@@ -136,7 +155,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="pepites-grid"></div>
             </section>
 
-            <!-- TAB 5: ANALYSEUR PRO 360° ULTRA-COMPLET RESTAURÉ -->
+            <!-- TAB 5: ANALYSEUR PRO 360° -->
             <section id="tab-analyzer" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
                     <h2 class="text-xl font-bold text-white">🔍 Analyseur Technique & Fondamental Pro 360°</h2>
@@ -169,7 +188,7 @@
                 </div>
             </section>
 
-            <!-- TAB 7: SUIVI DE POSITION LIVE (CLOUD SUPABASE + ALARME BIM BIM) -->
+            <!-- TAB 7: SUIVI DE POSITION LIVE -->
             <section id="tab-live-tracking" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
                     <div class="flex justify-between items-center flex-wrap gap-2">
@@ -308,11 +327,11 @@
         
         <!-- FOOTER -->
         <footer class="bg-slate-900/50 border-t border-slate-800/80 py-4 text-center text-xs text-slate-500">
-            Crypto Pulse AI Terminal Pro — Version V16.1 Cloud Ultime
+            Crypto Pulse AI Terminal Pro — Version V16.2 Cloud Ultime
         </footer>
     </div>
 
-    <!-- JAVASCRIPT LOGIC V16.1 -->
+    <!-- JAVASCRIPT LOGIC V16.2 -->
     <script>
         const SUPABASE_URL = "https://qiggqcqmaorbpugxmmga.supabase.co";
         const SUPABASE_ANON_KEY = "Sb_publishable_A0JrgbkCxzpZvQG3htKuPA_WJM48MsV";
@@ -326,7 +345,9 @@
 
         let globalCryptos = [];
         let cloudPositions = [];
+        let watchlist = JSON.parse(localStorage.getItem('crypto_watchlist') || '[]');
         let journalTrades = JSON.parse(localStorage.getItem('crypto_journal') || '[]');
+        let currentFilter = 'ALL';
         let currentNewsFilter = 'ALL';
         let currentUserEmail = localStorage.getItem('crypto_auth_email') || "";
 
@@ -387,6 +408,7 @@
                 const res2 = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=2');
                 const data2 = await res2.json();
                 globalCryptos = [...data1, ...data2];
+                renderTrackerTable();
                 renderCorrelationTable();
                 renderDynamicPepites();
                 renderCloudPositions();
@@ -505,6 +527,58 @@
             }
         }
 
+        function renderTrackerTable() {
+            const tbody = document.getElementById('crypto-table-body');
+            if(!tbody || globalCryptos.length === 0) return;
+            const search = escapeHtml(document.getElementById('tracker-search').value.toLowerCase());
+            let filtered = globalCryptos.filter(c => c.name.toLowerCase().includes(search) || c.symbol.toLowerCase().includes(search));
+
+            if(currentFilter === 'WATCHLIST') {
+                filtered = filtered.filter(c => watchlist.includes(c.symbol.toUpperCase()));
+            } else if(currentFilter === 'RWA') {
+                filtered = filtered.filter(c => ['ondo', 'pendle', 'polyx'].includes(c.symbol.toLowerCase()));
+            } else if(currentFilter === 'AI') {
+                filtered = filtered.filter(c => ['render', 'fet', 'tao'].includes(c.symbol.toLowerCase()));
+            }
+
+            if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500">Aucun token trouvé.</td></tr>`; return; }
+
+            tbody.innerHTML = filtered.map(c => {
+                const isFav = watchlist.includes(c.symbol.toUpperCase());
+                const change = c.price_change_percentage_24h || 0;
+                return `
+                    <tr class="hover:bg-slate-900/60 transition">
+                        <td class="p-4 flex items-center space-x-2">
+                            <button onclick="toggleWatchlist('${escapeHtml(c.symbol.toUpperCase())}')">${isFav ? '⭐' : '☆'}</button>
+                            <span class="font-bold text-white uppercase">${escapeHtml(c.symbol)}</span>
+                            <span class="text-slate-400 text-xs">${escapeHtml(c.name)}</span>
+                        </td>
+                        <td class="p-4 font-mono font-bold">$${Number(c.current_price).toLocaleString()}</td>
+                        <td class="p-4 font-mono ${change>=0?'text-emerald-400':'text-red-400'}">${change>=0?'+':''}${change.toFixed(2)}%</td>
+                        <td class="p-4 font-mono text-slate-300">$${Number(c.total_volume||0).toLocaleString()}</td>
+                        <td class="p-4 font-mono text-slate-300">$${Number(c.market_cap||0).toLocaleString()}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="quickAnalyze('${escapeHtml(c.symbol.toUpperCase())}')" class="px-2.5 py-1 bg-cyan-500/10 text-cyan-400 rounded-lg text-xs">Analyser</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterCategory(cat) { 
+            currentFilter = cat; 
+            document.querySelectorAll('.cat-btn').forEach(b => b.className = "cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300");
+            event.target.className = "cat-btn px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold";
+            renderTrackerTable(); 
+        }
+        function filterTracker() { renderTrackerTable(); }
+
+        function toggleWatchlist(sym) {
+            if(watchlist.includes(sym)) { watchlist = watchlist.filter(s => s !== sym); } else { watchlist.push(sym); }
+            localStorage.setItem('crypto_watchlist', JSON.stringify(watchlist));
+            renderTrackerTable();
+        }
+
         function initTradingViewWidget(symbol) {
             const container = document.getElementById('tradingview-container');
             if(!container) return;
@@ -576,9 +650,6 @@
             runProAnalysis();
         }
 
-        // =========================================================================
-        // 🔍 ANALYSEUR PRO 360° ULTRA-COMPLET RESTAURÉ
-        // =========================================================================
         function runProAnalysis() {
             const query = escapeHtml(document.getElementById('analyzer-input').value.trim().toUpperCase());
             const resBox = document.getElementById('analyzer-result');
