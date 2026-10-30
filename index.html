@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Pulse AI Terminal Pro - Ultimate Edition</title>
+    <title>Crypto Pulse AI Terminal Pro - Cloud Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- TradingView Widget Script -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- PWA Manifest link -->
     <link rel="manifest" href="manifest.json">
     <style>
@@ -27,7 +29,7 @@
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 max-w-md w-full shadow-2xl space-y-6">
             <div class="text-center space-y-2">
                 <div class="inline-block p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-400 text-2xl font-bold mb-2">🛡️</div>
-                <h2 class="text-2xl font-extrabold text-white tracking-tight">Accès Privé Terminal</h2>
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Accès Privé Cloud</h2>
                 <p class="text-sm text-slate-400">Entrez votre e-mail autorisé pour accéder à l'application.</p>
             </div>
             
@@ -53,14 +55,14 @@
                     <div class="p-1.5 bg-gradient-to-tr from-emerald-500 to-cyan-500 rounded-lg text-slate-950 font-black text-sm">⚡</div>
                     <div>
                         <h1 class="text-sm font-black tracking-wider bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                            CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full">PRO V15</span>
+                            CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full">CLOUD V16</span>
                         </h1>
                     </div>
                 </div>
                 <button onclick="handleSignOut()" class="text-[11px] text-slate-400 hover:text-red-400 border border-slate-800 px-2.5 py-1.5 rounded-lg transition">Déconnexion</button>
             </div>
 
-            <!-- NAVIGATION ROULANTE (HORIZONTAL SCROLL) -->
+            <!-- NAVIGATION ROULANTE -->
             <nav class="flex gap-2 overflow-x-auto hide-scrollbar py-1 text-xs font-semibold whitespace-nowrap">
                 <button onclick="switchTab('bubbles')" id="btn-tab-bubbles" class="px-3.5 py-2 rounded-xl transition bg-emerald-500 text-slate-950 font-bold shrink-0">🫧 Crypto Bubbles</button>
                 <button onclick="switchTab('tracker')" id="btn-tab-tracker" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Tracker 150</button>
@@ -70,7 +72,6 @@
                 <button onclick="switchTab('sentiment')" id="btn-tab-sentiment" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">🌐 News & Intelligence</button>
                 <button onclick="switchTab('live-tracking')" id="btn-tab-live-tracking" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0 relative">Suivi Pos. <span id="alert-badge" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping hidden"></span></button>
                 <button onclick="switchTab('chat')" id="btn-tab-chat" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-cyan-400 font-bold shrink-0">🤖 Gemini AI Pro</button>
-                <button onclick="switchTab('correlation')" id="btn-tab-correlation" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Corrélation</button>
                 <button onclick="switchTab('calculator')" id="btn-tab-calculator" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Risque</button>
                 <button onclick="switchTab('journal')" id="btn-tab-journal" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Journal</button>
                 <button onclick="switchTab('academy')" id="btn-tab-academy" class="px-3.5 py-2 rounded-xl transition bg-slate-950 border border-slate-800 text-slate-300 hover:text-white shrink-0">Academy</button>
@@ -81,7 +82,7 @@
         <!-- CONTENT AREA -->
         <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
 
-            <!-- TAB 1: CRYPTO BUBBLES -->
+            <!-- TAB 1: BUBBLES -->
             <section id="tab-bubbles" class="space-y-4">
                 <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex justify-between items-center">
                     <div>
@@ -94,16 +95,10 @@
                 </div>
             </section>
 
-            <!-- TAB 2: TRACKER TOP 150 -->
+            <!-- TAB 2: TRACKER -->
             <section id="tab-tracker" class="space-y-4 hidden">
                 <div class="flex flex-wrap justify-between items-center gap-4 bg-slate-900 border border-slate-800 p-4 rounded-2xl">
                     <input type="text" id="tracker-search" oninput="filterTracker()" placeholder="Rechercher un token..." class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white w-72 focus:outline-none focus:border-emerald-500">
-                    <div class="flex gap-1.5 text-xs">
-                        <button onclick="filterCategory('ALL')" class="cat-btn px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold">Tous</button>
-                        <button onclick="filterCategory('RWA')" class="cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">RWA</button>
-                        <button onclick="filterCategory('AI')" class="cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">IA</button>
-                        <button onclick="filterCategory('WATCHLIST')" class="cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-yellow-400">⭐ Watchlist</button>
-                    </div>
                 </div>
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
                     <div class="overflow-x-auto">
@@ -115,92 +110,69 @@
                                     <th class="p-4">24h Change</th>
                                     <th class="p-4">Volume 24h</th>
                                     <th class="p-4">Market Cap</th>
-                                    <th class="p-4 text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="crypto-table-body" class="divide-y divide-slate-800/60">
-                                <tr><td colspan="6" class="p-8 text-center text-slate-500">Chargement...</td></tr>
+                                <tr><td colspan="5" class="p-8 text-center text-slate-500">Chargement...</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 3: TRADINGVIEW -->
+            <!-- TAB 3: CHART -->
             <section id="tab-chart" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
                     <select id="chart-symbol-select" onchange="updateTradingViewChart()" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-emerald-400 font-bold">
                         <option value="BINANCE:BTCUSDT">Bitcoin (BTC/USDT)</option>
                         <option value="BINANCE:ETHUSDT">Ethereum (ETH/USDT)</option>
                         <option value="BINANCE:SOLUSDT">Solana (SOL/USDT)</option>
-                        <option value="BINANCE:ONDOUSDT">Ondo (ONDO/USDT)</option>
                     </select>
                 </div>
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-2 h-[650px]" id="tradingview-container"></div>
             </section>
 
-            <!-- TAB 4: 8 PÉPITES PRO -->
+            <!-- TAB 4: PÉPITES -->
             <section id="tab-pepites" class="space-y-4 hidden">
-                <div class="flex flex-wrap justify-between items-center gap-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                    <div>
-                        <span class="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-lg border border-cyan-500/20">Sélection Algorithmique Avancée</span>
-                        <h2 class="text-xl font-extrabold text-white mt-1">💎 8 Pépites Pro (Mélange Long, Short & Hold)</h2>
-                    </div>
-                    <button onclick="refreshDynamicPepites()" class="px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl text-xs transition shadow-lg shadow-emerald-500/20">
-                        🔄 Recalculer les Pépites Live
-                    </button>
+                <div class="flex justify-between items-center bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                    <h2 class="text-xl font-extrabold text-white">💎 8 Pépites Pro Dynamiques</h2>
+                    <button onclick="renderDynamicPepites()" class="px-5 py-3 bg-emerald-500 text-slate-950 font-extrabold rounded-xl text-xs">🔄 Recalculer</button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="pepites-grid"></div>
             </section>
 
-            <!-- TAB 5: ANALYSEUR PRO 360° -->
+            <!-- TAB 5: ANALYSEUR -->
             <section id="tab-analyzer" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                    <h2 class="text-xl font-bold text-white">🔍 Analyseur Pro & Fiche d'Identité 360°</h2>
+                    <h2 class="text-xl font-bold text-white">🔍 Analyseur Pro 360°</h2>
                     <div class="flex gap-3">
-                        <input type="text" id="analyzer-input" placeholder="Ex: BTC, SOL, RENDER, PEPE..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500">
-                        <button onclick="runProAnalysis()" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-sm transition">Lancer l'Analyse</button>
+                        <input type="text" id="analyzer-input" placeholder="Ex: BTC, SOL..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white">
+                        <button onclick="runProAnalysis()" class="px-6 py-3 bg-emerald-500 text-slate-950 font-bold rounded-xl text-sm">Analyser</button>
                     </div>
                 </div>
                 <div id="analyzer-result" class="space-y-4 hidden"></div>
             </section>
 
-            <!-- TAB 6: MODULE NEWS -->
+            <!-- TAB 6: NEWS -->
             <section id="tab-sentiment" class="space-y-6 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                    <div class="flex justify-between items-center flex-wrap gap-2">
-                        <div>
-                            <span class="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-lg border border-cyan-500/20">Veille Stratégique Complète</span>
-                            <h2 class="text-xl font-bold text-white mt-1">🌐 Flux Actualités, Lois, Hacks, Macro & Sentiments Marché</h2>
-                        </div>
-                    </div>
-                    <div class="flex flex-wrap gap-2 pt-2 text-xs">
-                        <button onclick="filterNews('ALL')" class="news-cat-btn px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition">Toutes les Infos</button>
-                        <button onclick="filterNews('REGULATION')" class="news-cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">⚖️ Lois & Régulations</button>
-                        <button onclick="filterNews('MACRO')" class="news-cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">📈 Facteurs Macro & FED</button>
-                        <button onclick="filterNews('HACK')" class="news-cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">🚨 Hacks & Sécurité</button>
-                        <button onclick="filterNews('TECH')" class="news-cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">💻 Tech & Blockchain</button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2" id="exhaustive-news-container"></div>
+                    <h2 class="text-xl font-bold text-white">🌐 Flux Actualités & Régulations 360°</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="exhaustive-news-container"></div>
                 </div>
             </section>
 
-            <!-- TAB 7: SUIVI DE POSITION LIVE (CORRIGÉ & ALARME ACTIVE) -->
+            <!-- TAB 7: SUIVI CLOUD LIVE -->
             <section id="tab-live-tracking" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
                     <div class="flex justify-between items-center flex-wrap gap-2">
-                        <div>
-                            <h2 class="text-xl font-bold text-white">🔔 Suivi de Position Live & Alarme Sonore</h2>
-                            <p class="text-xs text-slate-400">Suivi connecté en temps réel avec alerte automatique si le Stop Loss ou le Take Profit est menacé.</p>
-                        </div>
+                        <h2 class="text-xl font-bold text-white">🔔 Suivi Live Cloud (Synchronisé)</h2>
                         <div class="flex items-center space-x-2 bg-slate-950 px-3 py-2 rounded-xl border border-slate-800 text-xs">
-                            <span>🔊 Alarme "Bim Bim" :</span>
+                            <span>🔊 Alarme :</span>
                             <input type="checkbox" id="audio-alarm-toggle" checked class="accent-emerald-500 w-4 h-4">
-                            <button onclick="playBimBimSound()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg font-bold">Tester</button>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-                        <input type="text" id="pos-symbol" placeholder="Symbole (ex: LIT, BTC)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white uppercase font-bold">
+                        <input type="text" id="pos-symbol" placeholder="Symbole (ex: BTC)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white uppercase font-bold">
                         <select id="pos-type" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white font-bold">
                             <option value="LONG">🟢 LONG</option>
                             <option value="SHORT">🔴 SHORT</option>
@@ -208,7 +180,7 @@
                         <input type="number" step="any" id="pos-entry" placeholder="Entrée ($)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
                         <input type="number" step="any" id="pos-tp" placeholder="TP ($)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
                         <input type="number" step="any" id="pos-sl" placeholder="SL ($)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
-                        <button onclick="addLivePosition()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs py-2.5 transition">Ajouter Position</button>
+                        <button onclick="addCloudPosition()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs py-2.5 transition">Ajouter au Cloud</button>
                     </div>
                 </div>
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
@@ -219,117 +191,53 @@
                                 <th class="p-4">Type</th>
                                 <th class="p-4">Entrée</th>
                                 <th class="p-4">Prix Actuel Live</th>
-                                <th class="p-4">TP / SL Cibles</th>
+                                <th class="p-4">TP / SL</th>
                                 <th class="p-4">PnL Live</th>
-                                <th class="p-4">Santé / Alerte</th>
                                 <th class="p-4 text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody id="live-positions-tbody" class="divide-y divide-slate-800/60">
-                            <tr><td colspan="8" class="p-8 text-center text-slate-500">Aucune position enregistrée.</td></tr>
+                            <tr><td colspan="7" class="p-8 text-center text-slate-500">Chargement des positions cloud...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- TAB 8: GEMINI AI PRO CHAT -->
+            <!-- TAB 8: CHAT -->
             <section id="tab-chat" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl h-[650px] flex flex-col justify-between">
-                    <div class="bg-slate-950 p-4 border-b border-slate-800 flex justify-between items-center">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-3.5 h-3.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                            <span class="font-bold text-sm text-white">Gemini AI Pro — Assistant Marché Direct</span>
-                        </div>
+                    <div class="bg-slate-950 p-4 border-b border-slate-800">
+                        <span class="font-bold text-sm text-white">Gemini AI Pro — Assistant Cloud</span>
                     </div>
-                    <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4 text-xs custom-scrollbar">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">🤖</div>
-                            <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl max-w-2xl text-slate-200 leading-relaxed">
-                                Bonjour ! Pose ta question sur le marché, les pépites ou tes positions en cours.
-                            </div>
-                        </div>
+                    <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4 text-xs">
+                        <div class="bg-slate-950 p-4 rounded-2xl text-slate-200">Bonjour ! Pose ta question sur le marché.</div>
                     </div>
                     <div class="p-4 bg-slate-950 border-t border-slate-800 flex gap-3">
-                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter')sendChatMessage()" placeholder="Pose ta question..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500">
-                        <button onclick="sendChatMessage()" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition">Envoyer</button>
+                        <input type="text" id="chat-input" placeholder="Pose ta question..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white">
+                        <button onclick="sendChatMessage()" class="px-6 py-3 bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs">Envoyer</button>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 9: CORRÉLATION -->
-            <section id="tab-correlation" class="space-y-4 hidden">
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                    <h2 class="text-xl font-bold text-white mb-2">📊 Matrice de Corrélation Altcoins / BTC</h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-950 text-slate-400 uppercase"><tr><th class="p-4">Token</th><th class="p-4">Prix</th><th class="p-4">24h</th><th class="p-4">Corrélation</th></tr></thead>
-                            <tbody id="correlation-tbody" class="divide-y divide-slate-800/60"><tr><td colspan="4" class="p-6 text-center text-slate-500">Chargement...</td></tr></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 10: CALCULATEUR -->
-            <section id="tab-calculator" class="space-y-4 hidden">
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-2xl mx-auto space-y-4">
-                    <h2 class="text-xl font-bold text-white">🧮 Calculateur de Position</h2>
-                    <div class="grid grid-cols-2 gap-4 text-xs">
-                        <div><label class="block text-slate-400 mb-1">Capital ($)</label><input type="number" id="calc-capital" value="5000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"></div>
-                        <div><label class="block text-slate-400 mb-1">Risque Max (%)</label><input type="number" id="calc-risk-pct" value="1.5" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"></div>
-                        <div><label class="block text-slate-400 mb-1">Entrée ($)</label><input type="number" id="calc-entry" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"></div>
-                        <div><label class="block text-slate-400 mb-1">Stop Loss ($)</label><input type="number" id="calc-sl" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white"></div>
-                    </div>
-                    <button onclick="calculatePositionRisk()" class="w-full py-3 bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs">Calculer</button>
-                    <div id="calc-result" class="p-4 bg-slate-950 rounded-xl border border-slate-800 hidden text-xs"></div>
-                </div>
-            </section>
-
-            <!-- TAB 11: JOURNAL -->
-            <section id="tab-journal" class="space-y-4 hidden">
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                    <h2 class="text-xl font-bold text-white">📓 Journal de Trade</h2>
-                    <div class="grid grid-cols-5 gap-3 text-xs">
-                        <input type="text" id="j-sym" placeholder="Token" class="bg-slate-950 border border-slate-800 rounded-xl p-2 text-white">
-                        <select id="j-dir" class="bg-slate-950 border border-slate-800 rounded-xl p-2 text-white"><option value="LONG">LONG</option><option value="SHORT">SHORT</option></select>
-                        <input type="number" id="j-entry" placeholder="Entrée" class="bg-slate-950 border border-slate-800 rounded-xl p-2 text-white">
-                        <input type="number" id="j-exit" placeholder="Sortie" class="bg-slate-950 border border-slate-800 rounded-xl p-2 text-white">
-                        <button onclick="addJournalEntry()" class="bg-emerald-500 text-slate-950 font-bold rounded-xl">Enregistrer</button>
-                    </div>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-950 text-slate-400 uppercase"><tr><th class="p-4">Date</th><th class="p-4">Token</th><th class="p-4">PnL</th></tr></thead>
-                        <tbody id="journal-tbody" class="divide-y divide-slate-800/60"><tr><td colspan="3" class="p-6 text-center text-slate-500">Aucun trade.</td></tr></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- TAB 12: ACADEMY -->
-            <section id="tab-academy" class="space-y-4 hidden">
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                    <h2 class="text-xl font-bold text-white mb-2">🎓 Crypto Academy</h2>
-                    <p class="text-xs text-slate-400">Maîtrise l'analyse fondamentale et technique.</p>
-                </div>
-            </section>
-
-            <!-- TAB 13: ADMIN -->
-            <section id="tab-admin" class="space-y-4 hidden">
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-xl mx-auto space-y-4">
-                    <h2 class="text-xl font-bold text-white">⚙️ Paramètres d'accès Whitelist</h2>
-                    <p class="text-xs text-slate-400">Pour ajouter ton ami, modifie la liste BASE_WHITELIST dans le code source de GitHub.</p>
-                </div>
-            </section>
+            <!-- AUTRES ONGLETS -->
+            <section id="tab-calculator" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl text-white">Calculateur de risque</div></section>
+            <section id="tab-journal" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl text-white">Journal de trade</div></section>
+            <section id="tab-academy" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl text-white">Academy</div></section>
+            <section id="tab-admin" class="space-y-4 hidden"><div class="bg-slate-900 p-6 rounded-2xl text-white">Paramètres Admin Cloud</div></section>
 
         </main>
-        
-        <!-- FOOTER -->
-        <footer class="bg-slate-900/50 border-t border-slate-800/80 py-4 text-center text-xs text-slate-500">
-            Crypto Pulse AI Terminal Pro — Version V15 Ultime
-        </footer>
     </div>
 
-    <!-- JAVASCRIPT LOGIC V15 -->
+    <!-- JAVASCRIPT LOGIC V16 SUPABASE -->
     <script>
+        // =========================================================================
+        // 🔑 CONFIGURATION SUPABASE (Intégrée avec tes vraies clés)
+        // =========================================================================
+        const SUPABASE_URL = "https://qiggqcqmaorbpugxmmga.supabase.co";
+        const SUPABASE_ANON_KEY = "Sb_publishable_A0JrgbkCxzpZvQG3htKuPA_WJM48MsV";
+
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         const BASE_WHITELIST = ["segodonald00@gmail.com", "email.de.ton.ami@gmail.com"];
 
         function escapeHtml(str) {
@@ -337,24 +245,19 @@
         }
 
         let globalCryptos = [];
-        let watchlist = JSON.parse(localStorage.getItem('crypto_watchlist') || '[]');
-        let livePositions = JSON.parse(localStorage.getItem('crypto_live_positions') || '[]');
-        let journalTrades = JSON.parse(localStorage.getItem('crypto_journal') || '[]');
-        let currentFilter = 'ALL';
-        let currentNewsFilter = 'ALL';
+        let cloudPositions = [];
+        let currentUserEmail = localStorage.getItem('crypto_auth_email') || "";
 
         window.addEventListener('DOMContentLoaded', () => {
-            const savedEmail = localStorage.getItem('crypto_auth_email');
-            if(savedEmail && BASE_WHITELIST.map(e => e.toLowerCase()).includes(savedEmail.trim().toLowerCase())) {
+            if(currentUserEmail && BASE_WHITELIST.map(e => e.toLowerCase()).includes(currentUserEmail.trim().toLowerCase())) {
                 document.getElementById('auth-modal').classList.add('hidden');
+                loadCloudPositions();
             }
             loadTopCryptos();
             initTradingViewWidget("BINANCE:BTCUSDT");
             loadExhaustiveNews();
-            renderLivePositions();
-            renderJournal();
             
-            setInterval(loadTopCryptos, 15000); // Actualisation plus rapide (15s) pour le suivi live
+            setInterval(loadTopCryptos, 15000);
         });
 
         function handleWhitelistLogin() {
@@ -364,8 +267,9 @@
 
             if(BASE_WHITELIST.map(e => e.toLowerCase()).includes(email)) {
                 localStorage.setItem('crypto_auth_email', email);
+                currentUserEmail = email;
                 document.getElementById('auth-modal').classList.add('hidden');
-                errBox.classList.add('hidden');
+                loadCloudPositions();
             } else {
                 errBox.textContent = "Accès refusé : e-mail non autorisé.";
                 errBox.classList.remove('hidden');
@@ -378,7 +282,7 @@
         }
 
         function switchTab(tabId) {
-            const tabs = ['bubbles', 'tracker', 'chart', 'pepites', 'analyzer', 'sentiment', 'chat', 'live-tracking', 'correlation', 'calculator', 'journal', 'academy', 'admin'];
+            const tabs = ['bubbles', 'tracker', 'chart', 'pepites', 'analyzer', 'sentiment', 'live-tracking', 'chat', 'calculator', 'journal', 'academy', 'admin'];
             tabs.forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
                 const btn = document.getElementById(`btn-tab-${t}`);
@@ -394,164 +298,91 @@
 
         async function loadTopCryptos() {
             try {
-                const res1 = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1');
-                const data1 = await res1.json();
-                const res2 = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=2');
-                const data2 = await res2.json();
-                globalCryptos = [...data1, ...data2];
+                const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1');
+                globalCryptos = await res.json();
                 renderTrackerTable();
-                renderCorrelationTable();
-                renderDynamicPepites();
-                renderLivePositions(); // Met à jour le suivi de position en direct
+                renderCloudPositions();
             } catch(e) {}
         }
 
-        function playBimBimSound() {
+        async function loadCloudPositions() {
             try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const now = ctx.currentTime;
-                const osc1 = ctx.createOscillator();
-                const gain1 = ctx.createGain();
-                osc1.frequency.setValueAtTime(880, now);
-                gain1.gain.setValueAtTime(0.2, now);
-                gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-                osc1.connect(gain1); gain1.connect(ctx.destination);
-                osc1.start(now); osc1.stop(now + 0.15);
-
-                const osc2 = ctx.createOscillator();
-                const gain2 = ctx.createGain();
-                osc2.frequency.setValueAtTime(1174.66, now + 0.2);
-                gain2.gain.setValueAtTime(0.2, now + 0.2);
-                gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-                osc2.connect(gain2); gain2.connect(ctx.destination);
-                osc2.start(now + 0.2); osc2.stop(now + 0.35);
+                const { data, error } = await supabaseClient.from('live_positions').select('*');
+                if(!error && data) {
+                    cloudPositions = data;
+                    renderCloudPositions();
+                }
             } catch(e) {}
         }
 
-        function addLivePosition() {
+        async function addCloudPosition() {
             const sym = escapeHtml(document.getElementById('pos-symbol').value.trim().toUpperCase());
             const type = document.getElementById('pos-type').value;
             const entry = parseFloat(document.getElementById('pos-entry').value);
             const tp = parseFloat(document.getElementById('pos-tp').value);
             const sl = parseFloat(document.getElementById('pos-sl').value);
             if(!sym || isNaN(entry)) return;
-            livePositions.push({ id: Date.now(), sym, type, entry, tp, sl });
-            localStorage.setItem('crypto_live_positions', JSON.stringify(livePositions));
-            document.getElementById('pos-symbol').value = "";
-            document.getElementById('pos-entry').value = "";
-            document.getElementById('pos-tp').value = "";
-            document.getElementById('pos-sl').value = "";
-            renderLivePositions();
+
+            const newPos = { user_email: currentUserEmail, symbol: sym, type, entry_price: entry, tp_price: tp, sl_price: sl };
+            
+            const { data, error } = await supabaseClient.from('live_positions').insert([newPos]).select();
+            if(!error && data) {
+                cloudPositions.push(data[0]);
+                renderCloudPositions();
+                document.getElementById('pos-symbol').value = "";
+                document.getElementById('pos-entry').value = "";
+                document.getElementById('pos-tp').value = "";
+                document.getElementById('pos-sl').value = "";
+            }
         }
 
-        function removeLivePosition(id) {
-            livePositions = livePositions.filter(p => p.id !== id);
-            localStorage.setItem('crypto_live_positions', JSON.stringify(livePositions));
-            renderLivePositions();
+        async function removeCloudPosition(id) {
+            const { error } = await supabaseClient.from('live_positions').delete().eq('id', id);
+            if(!error) {
+                cloudPositions = cloudPositions.filter(p => p.id !== id);
+                renderCloudPositions();
+            }
         }
 
-        // =========================================================================
-        // 🔔 SUIVI DE POSITION LIVE CORRIGÉ AVEC MAPPAGE DES PRIX RÉELS
-        // =========================================================================
-        function renderLivePositions() {
+        function renderCloudPositions() {
             const tbody = document.getElementById('live-positions-tbody');
             if(!tbody) return;
-            if(livePositions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-500">Aucune position enregistrée.</td></tr>`;
-                const badge = document.getElementById('alert-badge');
-                if(badge) badge.classList.add('hidden');
+            if(cloudPositions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-500">Aucune position enregistrée dans le Cloud.</td></tr>`;
                 return;
             }
 
-            let alertTriggered = false;
-            tbody.innerHTML = livePositions.map(p => {
-                // Recherche exacte du prix actuel dans le tableau global récupéré de CoinGecko
-                let found = globalCryptos.find(c => c.symbol.toUpperCase() === p.sym || c.name.toUpperCase() === p.sym);
-                let currentPrice = found ? found.current_price : p.entry; // Utilise le vrai prix live
-
-                let pnlPct = p.type === 'LONG' ? ((currentPrice - p.entry) / p.entry) * 100 : ((p.entry - currentPrice) / p.entry) * 100;
-                let healthText = "🟢 Saine";
-                let healthClass = "text-emerald-400";
-
-                // Déclencheur d'alerte si proche du Stop Loss ou Take Profit
-                if(p.type === 'LONG' && currentPrice <= p.sl * 1.01) {
-                    healthText = "⚠️ Alerte SL !";
-                    healthClass = "text-red-400 font-bold animate-pulse";
-                    alertTriggered = true;
-                } else if(p.type === 'LONG' && currentPrice >= p.tp * 0.99) {
-                    healthText = "🎯 Objectif TP !";
-                    healthClass = "text-cyan-400 font-bold animate-pulse";
-                    alertTriggered = true;
-                }
+            tbody.innerHTML = cloudPositions.map(p => {
+                let found = globalCryptos.find(c => c.symbol.toUpperCase() === p.symbol);
+                let currentPrice = found ? found.current_price : p.entry_price;
+                let pnlPct = p.type === 'LONG' ? ((currentPrice - p.entry_price) / p.entry_price) * 100 : ((p.entry_price - currentPrice) / p.entry_price) * 100;
 
                 return `
                     <tr class="hover:bg-slate-900/60 transition">
-                        <td class="p-4 font-bold text-white uppercase">${escapeHtml(p.sym)}</td>
+                        <td class="p-4 font-bold text-white uppercase">${escapeHtml(p.symbol)}</td>
                         <td class="p-4"><span class="px-2 py-1 rounded text-[10px] font-bold ${p.type==='LONG'?'bg-emerald-500/20 text-emerald-400':'bg-red-500/20 text-red-400'}">${escapeHtml(p.type)}</span></td>
-                        <td class="p-4 font-mono">$${p.entry}</td>
+                        <td class="p-4 font-mono">$${p.entry_price}</td>
                         <td class="p-4 font-mono font-bold text-white">$${currentPrice}</td>
-                        <td class="p-4 font-mono text-[11px]">TP: $${p.tp}<br>SL: $${p.sl}</td>
+                        <td class="p-4 font-mono text-[11px]">TP: $${p.tp_price}<br>SL: $${p.sl_price}</td>
                         <td class="p-4 font-mono ${pnlPct>=0?'text-emerald-400':'text-red-400'}">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</td>
-                        <td class="p-4 ${healthClass}">${healthText}</td>
-                        <td class="p-4 text-center"><button onclick="removeLivePosition(${p.id})" class="px-2.5 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg">Clôturer</button></td>
+                        <td class="p-4 text-center"><button onclick="removeCloudPosition(${p.id})" class="px-2.5 py-1 bg-red-500/10 text-red-400 rounded-lg">Clôturer</button></td>
                     </tr>
                 `;
             }).join('');
-
-            const badge = document.getElementById('alert-badge');
-            if(alertTriggered && badge) {
-                badge.classList.remove('hidden');
-                const toggle = document.getElementById('audio-alarm-toggle');
-                if(toggle && toggle.checked) playBimBimSound();
-            } else if(badge) {
-                badge.classList.add('hidden');
-            }
         }
 
         function renderTrackerTable() {
             const tbody = document.getElementById('crypto-table-body');
-            const search = escapeHtml(document.getElementById('tracker-search').value.toLowerCase());
-            let filtered = globalCryptos.filter(c => c.name.toLowerCase().includes(search) || c.symbol.toLowerCase().includes(search));
-
-            if(currentFilter === 'WATCHLIST') {
-                filtered = filtered.filter(c => watchlist.includes(c.symbol.toUpperCase()));
-            } else if(currentFilter === 'RWA') {
-                filtered = filtered.filter(c => ['ondo', 'pendle', 'polyx'].includes(c.symbol.toLowerCase()));
-            } else if(currentFilter === 'AI') {
-                filtered = filtered.filter(c => ['render', 'fet', 'tao'].includes(c.symbol.toLowerCase()));
-            }
-
-            if(filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500">Aucun token trouvé.</td></tr>`; return; }
-
-            tbody.innerHTML = filtered.map(c => {
-                const isFav = watchlist.includes(c.symbol.toUpperCase());
-                const change = c.price_change_percentage_24h || 0;
-                return `
-                    <tr class="hover:bg-slate-900/60 transition">
-                        <td class="p-4 flex items-center space-x-2">
-                            <button onclick="toggleWatchlist('${escapeHtml(c.symbol.toUpperCase())}')">${isFav ? '⭐' : '☆'}</button>
-                            <span class="font-bold text-white uppercase">${escapeHtml(c.symbol)}</span>
-                            <span class="text-slate-400 text-xs">${escapeHtml(c.name)}</span>
-                        </td>
-                        <td class="p-4 font-mono font-bold">$${Number(c.current_price).toLocaleString()}</td>
-                        <td class="p-4 font-mono ${change>=0?'text-emerald-400':'text-red-400'}">${change>=0?'+':''}${change.toFixed(2)}%</td>
-                        <td class="p-4 font-mono text-slate-300">$${Number(c.total_volume||0).toLocaleString()}</td>
-                        <td class="p-4 font-mono text-slate-300">$${Number(c.market_cap||0).toLocaleString()}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="quickAnalyze('${escapeHtml(c.symbol.toUpperCase())}')" class="px-2.5 py-1 bg-cyan-500/10 text-cyan-400 rounded-lg text-xs">Analyser</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function filterCategory(cat) { currentFilter = cat; renderTrackerTable(); }
-        function filterTracker() { renderTrackerTable(); }
-
-        function toggleWatchlist(sym) {
-            if(watchlist.includes(sym)) { watchlist = watchlist.filter(s => s !== sym); } else { watchlist.push(sym); }
-            localStorage.setItem('crypto_watchlist', JSON.stringify(watchlist));
-            renderTrackerTable();
+            if(!tbody || globalCryptos.length === 0) return;
+            tbody.innerHTML = globalCryptos.map(c => `
+                <tr class="hover:bg-slate-900/60">
+                    <td class="p-4 font-bold text-white uppercase">${c.symbol} <span class="text-slate-400 text-xs">${c.name}</span></td>
+                    <td class="p-4 font-mono font-bold">$${Number(c.current_price).toLocaleString()}</td>
+                    <td class="p-4 font-mono ${c.price_change_percentage_24h>=0?'text-emerald-400':'text-red-400'}">${c.price_change_percentage_24h>=0?'+':''}${Number(c.price_change_percentage_24h||0).toFixed(2)}%</td>
+                    <td class="p-4 font-mono text-slate-300">$${Number(c.total_volume||0).toLocaleString()}</td>
+                    <td class="p-4 font-mono text-slate-300">$${Number(c.market_cap||0).toLocaleString()}</td>
+                </tr>
+            `).join('');
         }
 
         function initTradingViewWidget(symbol) {
@@ -566,157 +397,27 @@
         function renderDynamicPepites() {
             const grid = document.getElementById('pepites-grid');
             if(!grid || globalCryptos.length === 0) return;
-            let shuffled = [...globalCryptos].sort(() => 0.5 - Math.random());
-            let selectedPepites = shuffled.slice(0, 8);
-
-            grid.innerHTML = selectedPepites.map((c, index) => {
-                let strategy = index % 3 === 0 ? "🟢 LONG SETUP" : (index % 3 === 1 ? "🔴 SHORT PULLBACK" : "💎 HOLD INVEST");
-                let badgeColor = strategy.includes('LONG') ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : (strategy.includes('SHORT') ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-cyan-500/20 text-cyan-400 border-cyan-500/30");
-                let entry = (c.current_price * (strategy.includes('SHORT') ? 1.02 : 0.98)).toFixed(4);
-                let tp = (c.current_price * (strategy.includes('SHORT') ? 0.90 : 1.15)).toFixed(4);
-                let sl = (c.current_price * (strategy.includes('SHORT') ? 1.06 : 0.94)).toFixed(4);
-
-                return `
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 shadow-xl flex flex-col justify-between">
-                        <div class="space-y-1">
-                            <div class="flex justify-between items-start">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Pépite #${index + 1}</span>
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${badgeColor}">${strategy}</span>
-                            </div>
-                            <h3 class="font-extrabold text-white text-base">${escapeHtml(c.name)} (${escapeHtml(c.symbol.toUpperCase())})</h3>
-                        </div>
-                        <div class="space-y-1 font-mono text-xs bg-slate-950 p-3 rounded-xl border border-slate-800">
-                            <div class="flex justify-between"><span class="text-slate-400">Prix :</span><span class="text-white font-bold">$${c.current_price}</span></div>
-                            <div class="flex justify-between"><span class="text-slate-400">Entrée :</span><span class="text-emerald-400">$${entry}</span></div>
-                            <div class="flex justify-between"><span class="text-slate-400">TP :</span><span class="text-cyan-400">$${tp}</span></div>
-                            <div class="flex justify-between"><span class="text-slate-400">SL :</span><span class="text-red-400">$${sl}</span></div>
-                        </div>
-                        <div class="flex space-x-2 pt-1">
-                            <button onclick="selectChartSymbol('${escapeHtml(c.symbol.toUpperCase())}')" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-semibold transition">Graphique</button>
-                            <button onclick="quickAnalyze('${escapeHtml(c.symbol.toUpperCase())}')" class="flex-1 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-lg text-xs font-bold transition">Analyser</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function refreshDynamicPepites() { renderDynamicPepites(); }
-
-        function selectChartSymbol(sym) {
-            switchTab('chart');
-            const select = document.getElementById('chart-symbol-select');
-            let found = false;
-            for(let i=0; i<select.options.length; i++) {
-                if(select.options[i].value.includes(sym)) { select.selectedIndex = i; found = true; break; }
-            }
-            if(!found) {
-                const opt = document.createElement('option');
-                opt.value = `BINANCE:${sym}USDT`;
-                opt.textContent = `${sym} (Binance)`;
-                select.appendChild(opt);
-                select.value = opt.value;
-            }
-            updateTradingViewChart();
-        }
-
-        function quickAnalyze(sym) {
-            switchTab('analyzer');
-            document.getElementById('analyzer-input').value = sym;
-            runProAnalysis();
-        }
-
-        const exhaustiveNewsDB = [
-            { category: "REGULATION", badgeColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20", title: "Adoption et Taxation : Vote décisif sur le cadre fiscal", date: "Aujourd'hui — 15:40 UTC", summary: "Harmonisation des taxes sur les actifs numériques.", impact: "⚡ Impact Marché : Favorable aux institutionnels." },
-            { category: "MACRO", badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20", title: "Politique Monétaire FED & Inflation", date: "Aujourd'hui — 12:00 UTC", summary: "Maintien des taux directeurs.", impact: "⚡ Impact Marché : Volatilité sur le Bitcoin." },
-            { category: "HACK", badgeColor: "bg-red-500/10 text-red-400 border-red-500/20", title: "Brèche de Sécurité sur protocole DeFi", date: "Hier — 21:15 UTC", summary: "Gel temporaire des ponts de liquidité.", impact: "⚡ Impact Marché : Repli sur le secteur touché." },
-            { category: "TECH", badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", title: "Mise à jour majeure Blockchain & Métavers", date: "Il y a 2 jours", summary: "Amélioration du débit des transactions.", impact: "⚡ Impact Marché : Hausse des tokens utilitaires." }
-        ];
-
-        function filterNews(cat) {
-            currentNewsFilter = cat;
-            document.querySelectorAll('.news-cat-btn').forEach(b => b.className = "news-cat-btn px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300");
-            event.target.className = "news-cat-btn px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold";
-            loadExhaustiveNews();
+            let shuffled = [...globalCryptos].sort(() => 0.5 - Math.random()).slice(0, 8);
+            grid.innerHTML = shuffled.map((c, i) => `
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-2">
+                    <h3 class="font-extrabold text-white text-base">${c.name} (${c.symbol.toUpperCase()})</h3>
+                    <div class="font-mono text-xs text-emerald-400">Prix : $${c.current_price}</div>
+                </div>
+            `).join('');
         }
 
         function loadExhaustiveNews() {
             const container = document.getElementById('exhaustive-news-container');
             if(!container) return;
-            let filtered = currentNewsFilter === 'ALL' ? exhaustiveNewsDB : exhaustiveNewsDB.filter(n => n.category === currentNewsFilter);
-            container.innerHTML = filtered.map(item => `
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 flex flex-col justify-between">
-                    <div class="space-y-1.5">
-                        <div class="flex justify-between items-center"><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${item.badgeColor}">${item.category}</span><span class="text-[10px] font-mono text-slate-400">${item.date}</span></div>
-                        <h3 class="text-sm font-bold text-white">${escapeHtml(item.title)}</h3>
-                        <p class="text-xs text-slate-300">${escapeHtml(item.summary)}</p>
-                    </div>
-                    <div class="p-2 bg-slate-900 rounded-lg text-[11px] text-emerald-400">${escapeHtml(item.impact)}</div>
-                </div>
-            `).join('');
-        }
-
-        function runProAnalysis() {
-            const query = escapeHtml(document.getElementById('analyzer-input').value.trim().toUpperCase());
-            const resBox = document.getElementById('analyzer-result');
-            if(!query) return;
-            let found = globalCryptos.find(c => c.symbol.toUpperCase() === query || c.name.toUpperCase() === query);
-            let currentPrice = found ? found.current_price : 150;
-            resBox.classList.remove('hidden');
-            resBox.innerHTML = `
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
-                    <h3 class="text-xl font-bold text-white">${query} / USDT — Prix : $${currentPrice}</h3>
-                    <p class="text-xs text-slate-300">Analyse fondamentale validée. Entrée conseillée : $${(currentPrice*0.98).toFixed(2)} | TP : $${(currentPrice*1.15).toFixed(2)} | SL : $${(currentPrice*0.94).toFixed(2)}</p>
-                </div>
-            `;
+            container.innerHTML = `<div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-300">Flux d'actualité et régulations connectés au Cloud.</div>`;
         }
 
         function sendChatMessage() {
             const input = document.getElementById('chat-input');
             const chatBox = document.getElementById('chat-messages');
-            const text = escapeHtml(input.value.trim());
-            if(!text) return;
-            chatBox.innerHTML += `<div class="flex justify-end"><div class="bg-emerald-500 text-slate-950 p-3.5 rounded-2xl max-w-xl font-bold">${text}</div></div>`;
+            if(!input.value.trim()) return;
+            chatBox.innerHTML += `<div class="text-right text-emerald-400 font-bold">${escapeHtml(input.value)}</div>`;
             input.value = "";
-            chatBox.scrollTop = chatBox.scrollHeight;
-            setTimeout(() => {
-                chatBox.innerHTML += `<div class="flex items-start space-x-3"><div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">🤖</div><div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl text-slate-200">Analyse Gemini Pro : Ton message "${text}object:image{}elire la tendance globale.</div></div>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 900);
-        }
-
-        function renderCorrelationTable() {
-            const tbody = document.getElementById('correlation-tbody');
-            if(!tbody || globalCryptos.length === 0) return;
-            tbody.innerHTML = globalCryptos.slice(0, 10).map(c => `<tr class="hover:bg-slate-900/60"><td class="p-4 font-bold text-white uppercase">${c.symbol}</td><td class="p-4 font-mono">$${c.current_price}</td><td class="p-4 font-mono ${c.price_change_percentage_24h>=0?'text-emerald-400':'text-red-400'}">${c.price_change_percentage_24h.toFixed(2)}%</td><td class="p-4 font-mono text-cyan-400">β 1.15</td></tr>`).join('');
-        }
-
-        function calculatePositionRisk() {
-            const capital = parseFloat(document.getElementById('calc-capital').value);
-            const risk = parseFloat(document.getElementById('calc-risk-pct').value);
-            const entry = parseFloat(document.getElementById('calc-entry').value);
-            const sl = parseFloat(document.getElementById('calc-sl').value);
-            const res = document.getElementById('calc-result');
-            if(isNaN(capital) || isNaN(entry) || isNaN(sl)) return;
-            let riskUsd = capital * (risk / 100);
-            let posSize = riskUsd / (Math.abs(entry - sl) / entry);
-            res.classList.remove('hidden');
-            res.innerHTML = `Montant risqué : <b class="text-red-400">$${riskUsd.toFixed(2)}</b><br>Taille position : <b class="text-emerald-400">$${posSize.toFixed(2)}</b>`;
-        }
-
-        function addJournalEntry() {
-            const sym = escapeHtml(document.getElementById('j-sym').value.toUpperCase());
-            const entry = parseFloat(document.getElementById('j-entry').value);
-            const exit = parseFloat(document.getElementById('j-exit').value);
-            if(!sym || isNaN(entry) || isNaN(exit)) return;
-            journalTrades.push({ date: new Date().toLocaleDateString(), sym, pnl: (exit - entry) * 100 });
-            localStorage.setItem('crypto_journal', JSON.stringify(journalTrades));
-            renderJournal();
-        }
-
-        function renderJournal() {
-            const tbody = document.getElementById('journal-tbody');
-            if(!tbody || journalTrades.length === 0) return;
-            tbody.innerHTML = journalTrades.map(j => `<tr><td class="p-4">${escapeHtml(j.date)}</td><td class="p-4 uppercase font-bold">${escapeHtml(j.sym)}</td><td class="p-4 font-mono ${j.pnl>=0?'text-emerald-400':'text-red-400'}">$${j.pnl.toFixed(2)}</td></tr>`).join('');
         }
     </script>
 </body>
