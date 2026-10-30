@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Pulse AI Terminal Pro - Ultimate Edition</title>
+    <title>Crypto Pulse AI Terminal Pro - Cloud Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- TradingView Widget Script -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- PWA Manifest link -->
     <link rel="manifest" href="manifest.json">
     <style>
@@ -27,7 +29,7 @@
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 max-w-md w-full shadow-2xl space-y-6">
             <div class="text-center space-y-2">
                 <div class="inline-block p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-400 text-2xl font-bold mb-2">🛡️</div>
-                <h2 class="text-2xl font-extrabold text-white tracking-tight">Accès Privé Terminal</h2>
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Accès Privé Cloud</h2>
                 <p class="text-sm text-slate-400">Entrez votre e-mail autorisé pour accéder à l'application.</p>
             </div>
             
@@ -53,7 +55,7 @@
                     <div class="p-1.5 bg-gradient-to-tr from-emerald-500 to-cyan-500 rounded-lg text-slate-950 font-black text-sm">⚡</div>
                     <div>
                         <h1 class="text-sm font-black tracking-wider bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                            CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full">PRO V15</span>
+                            CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full">CLOUD V16</span>
                         </h1>
                     </div>
                 </div>
@@ -185,13 +187,13 @@
                 </div>
             </section>
 
-            <!-- TAB 7: SUIVI DE POSITION LIVE (CORRIGÉ & ALARME ACTIVE) -->
+            <!-- TAB 7: SUIVI DE POSITION LIVE (CLOUD SUPABASE + ALARME BIM BIM) -->
             <section id="tab-live-tracking" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
                     <div class="flex justify-between items-center flex-wrap gap-2">
                         <div>
-                            <h2 class="text-xl font-bold text-white">🔔 Suivi de Position Live & Alarme Sonore</h2>
-                            <p class="text-xs text-slate-400">Suivi connecté en temps réel avec alerte automatique si le Stop Loss ou le Take Profit est menacé.</p>
+                            <h2 class="text-xl font-bold text-white">🔔 Suivi de Position Live & Alarme Sonore Cloud</h2>
+                            <p class="text-xs text-slate-400">Positions synchronisées sur ton cloud Supabase avec alerte sonore automatique.</p>
                         </div>
                         <div class="flex items-center space-x-2 bg-slate-950 px-3 py-2 rounded-xl border border-slate-800 text-xs">
                             <span>🔊 Alarme "Bim Bim" :</span>
@@ -208,7 +210,7 @@
                         <input type="number" step="any" id="pos-entry" placeholder="Entrée ($)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
                         <input type="number" step="any" id="pos-tp" placeholder="TP ($)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
                         <input type="number" step="any" id="pos-sl" placeholder="SL ($)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white">
-                        <button onclick="addLivePosition()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs py-2.5 transition">Ajouter Position</button>
+                        <button onclick="addCloudPosition()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs py-2.5 transition">Ajouter au Cloud</button>
                     </div>
                 </div>
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
@@ -226,7 +228,7 @@
                             </tr>
                         </thead>
                         <tbody id="live-positions-tbody" class="divide-y divide-slate-800/60">
-                            <tr><td colspan="8" class="p-8 text-center text-slate-500">Aucune position enregistrée.</td></tr>
+                            <tr><td colspan="8" class="p-8 text-center text-slate-500">Chargement des positions cloud...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -245,7 +247,7 @@
                         <div class="flex items-start space-x-3">
                             <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">🤖</div>
                             <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl max-w-2xl text-slate-200 leading-relaxed">
-                                Bonjour ! Pose ta question sur le marché, les pépites ou tes positions en cours.
+                                Bonjour Donald ! Pose ta question sur le marché, les pépites ou tes positions en cours.
                             </div>
                         </div>
                     </div>
@@ -315,8 +317,8 @@
             <!-- TAB 13: ADMIN -->
             <section id="tab-admin" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-xl mx-auto space-y-4">
-                    <h2 class="text-xl font-bold text-white">⚙️ Paramètres d'accès Whitelist</h2>
-                    <p class="text-xs text-slate-400">Pour ajouter ton ami, modifie la liste BASE_WHITELIST dans le code source de GitHub.</p>
+                    <h2 class="text-xl font-bold text-white">⚙️ Paramètres d'accès Whitelist Cloud</h2>
+                    <p class="text-xs text-slate-400">Accès actuellement sécurisé exclusivement pour : <strong>segodonald00@gmail.com</strong></p>
                 </div>
             </section>
 
@@ -324,37 +326,46 @@
         
         <!-- FOOTER -->
         <footer class="bg-slate-900/50 border-t border-slate-800/80 py-4 text-center text-xs text-slate-500">
-            Crypto Pulse AI Terminal Pro — Version V15 Ultime
+            Crypto Pulse AI Terminal Pro — Version V16 Cloud Ultime
         </footer>
     </div>
 
-    <!-- JAVASCRIPT LOGIC V15 -->
+    <!-- JAVASCRIPT LOGIC V16 CLOUD SUPABASE -->
     <script>
-        const BASE_WHITELIST = ["segodonald00@gmail.com", "email.de.ton.ami@gmail.com"];
+        // =========================================================================
+        // 🔑 CONFIGURATION CLOUD SUPABASE
+        // =========================================================================
+        const SUPABASE_URL = "https://qiggqcqmaorbpugxmmga.supabase.co";
+        const SUPABASE_ANON_KEY = "Sb_publishable_A0JrgbkCxzpZvQG3htKuPA_WJM48MsV";
+
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Whitelist exclusive bloquée sur ton e-mail pour stabiliser l'application
+        const BASE_WHITELIST = ["segodonald00@gmail.com"];
 
         function escapeHtml(str) {
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
 
         let globalCryptos = [];
+        let cloudPositions = [];
         let watchlist = JSON.parse(localStorage.getItem('crypto_watchlist') || '[]');
-        let livePositions = JSON.parse(localStorage.getItem('crypto_live_positions') || '[]');
         let journalTrades = JSON.parse(localStorage.getItem('crypto_journal') || '[]');
         let currentFilter = 'ALL';
         let currentNewsFilter = 'ALL';
+        let currentUserEmail = localStorage.getItem('crypto_auth_email') || "";
 
         window.addEventListener('DOMContentLoaded', () => {
-            const savedEmail = localStorage.getItem('crypto_auth_email');
-            if(savedEmail && BASE_WHITELIST.map(e => e.toLowerCase()).includes(savedEmail.trim().toLowerCase())) {
+            if(currentUserEmail && BASE_WHITELIST.map(e => e.toLowerCase()).includes(currentUserEmail.trim().toLowerCase())) {
                 document.getElementById('auth-modal').classList.add('hidden');
+                loadCloudPositions();
             }
             loadTopCryptos();
             initTradingViewWidget("BINANCE:BTCUSDT");
             loadExhaustiveNews();
-            renderLivePositions();
             renderJournal();
             
-            setInterval(loadTopCryptos, 15000); // Actualisation plus rapide (15s) pour le suivi live
+            setInterval(loadTopCryptos, 15000); // Actualisation live des prix et du suivi de position
         });
 
         function handleWhitelistLogin() {
@@ -364,8 +375,10 @@
 
             if(BASE_WHITELIST.map(e => e.toLowerCase()).includes(email)) {
                 localStorage.setItem('crypto_auth_email', email);
+                currentUserEmail = email;
                 document.getElementById('auth-modal').classList.add('hidden');
                 errBox.classList.add('hidden');
+                loadCloudPositions();
             } else {
                 errBox.textContent = "Accès refusé : e-mail non autorisé.";
                 errBox.classList.remove('hidden');
@@ -378,7 +391,7 @@
         }
 
         function switchTab(tabId) {
-            const tabs = ['bubbles', 'tracker', 'chart', 'pepites', 'analyzer', 'sentiment', 'chat', 'live-tracking', 'correlation', 'calculator', 'journal', 'academy', 'admin'];
+            const tabs = ['bubbles', 'tracker', 'chart', 'pepites', 'analyzer', 'sentiment', 'live-tracking', 'chat', 'correlation', 'calculator', 'journal', 'academy', 'admin'];
             tabs.forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
                 const btn = document.getElementById(`btn-tab-${t}`);
@@ -402,8 +415,50 @@
                 renderTrackerTable();
                 renderCorrelationTable();
                 renderDynamicPepites();
-                renderLivePositions(); // Met à jour le suivi de position en direct
+                renderCloudPositions(); // Met à jour le suivi de position en direct avec les prix réels
             } catch(e) {}
+        }
+
+        // =========================================================================
+        // ☁️ GESTION CLOUD SUPABASE (POSITIONS)
+        // =========================================================================
+        async function loadCloudPositions() {
+            try {
+                const { data, error } = await supabaseClient.from('live_positions').select('*');
+                if(!error && data) {
+                    cloudPositions = data;
+                    renderCloudPositions();
+                }
+            } catch(e) {}
+        }
+
+        async function addCloudPosition() {
+            const sym = escapeHtml(document.getElementById('pos-symbol').value.trim().toUpperCase());
+            const type = document.getElementById('pos-type').value;
+            const entry = parseFloat(document.getElementById('pos-entry').value);
+            const tp = parseFloat(document.getElementById('pos-tp').value);
+            const sl = parseFloat(document.getElementById('pos-sl').value);
+            if(!sym || isNaN(entry)) return;
+
+            const newPos = { user_email: currentUserEmail, symbol: sym, type, entry_price: entry, tp_price: tp, sl_price: sl };
+            
+            const { data, error } = await supabaseClient.from('live_positions').insert([newPos]).select();
+            if(!error && data) {
+                cloudPositions.push(data[0]);
+                renderCloudPositions();
+                document.getElementById('pos-symbol').value = "";
+                document.getElementById('pos-entry').value = "";
+                document.getElementById('pos-tp').value = "";
+                document.getElementById('pos-sl').value = "";
+            }
+        }
+
+        async function removeCloudPosition(id) {
+            const { error } = await supabaseClient.from('live_positions').delete().eq('id', id);
+            if(!error) {
+                cloudPositions = cloudPositions.filter(p => p.id !== id);
+                renderCloudPositions();
+            }
         }
 
         function playBimBimSound() {
@@ -428,57 +483,30 @@
             } catch(e) {}
         }
 
-        function addLivePosition() {
-            const sym = escapeHtml(document.getElementById('pos-symbol').value.trim().toUpperCase());
-            const type = document.getElementById('pos-type').value;
-            const entry = parseFloat(document.getElementById('pos-entry').value);
-            const tp = parseFloat(document.getElementById('pos-tp').value);
-            const sl = parseFloat(document.getElementById('pos-sl').value);
-            if(!sym || isNaN(entry)) return;
-            livePositions.push({ id: Date.now(), sym, type, entry, tp, sl });
-            localStorage.setItem('crypto_live_positions', JSON.stringify(livePositions));
-            document.getElementById('pos-symbol').value = "";
-            document.getElementById('pos-entry').value = "";
-            document.getElementById('pos-tp').value = "";
-            document.getElementById('pos-sl').value = "";
-            renderLivePositions();
-        }
-
-        function removeLivePosition(id) {
-            livePositions = livePositions.filter(p => p.id !== id);
-            localStorage.setItem('crypto_live_positions', JSON.stringify(livePositions));
-            renderLivePositions();
-        }
-
-        // =========================================================================
-        // 🔔 SUIVI DE POSITION LIVE CORRIGÉ AVEC MAPPAGE DES PRIX RÉELS
-        // =========================================================================
-        function renderLivePositions() {
+        function renderCloudPositions() {
             const tbody = document.getElementById('live-positions-tbody');
             if(!tbody) return;
-            if(livePositions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-500">Aucune position enregistrée.</td></tr>`;
+            if(cloudPositions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-500">Aucune position enregistrée dans le Cloud.</td></tr>`;
                 const badge = document.getElementById('alert-badge');
                 if(badge) badge.classList.add('hidden');
                 return;
             }
 
             let alertTriggered = false;
-            tbody.innerHTML = livePositions.map(p => {
-                // Recherche exacte du prix actuel dans le tableau global récupéré de CoinGecko
-                let found = globalCryptos.find(c => c.symbol.toUpperCase() === p.sym || c.name.toUpperCase() === p.sym);
-                let currentPrice = found ? found.current_price : p.entry; // Utilise le vrai prix live
+            tbody.innerHTML = cloudPositions.map(p => {
+                let found = globalCryptos.find(c => c.symbol.toUpperCase() === p.symbol || c.name.toUpperCase() === p.symbol);
+                let currentPrice = found ? found.current_price : p.entry_price;
 
-                let pnlPct = p.type === 'LONG' ? ((currentPrice - p.entry) / p.entry) * 100 : ((p.entry - currentPrice) / p.entry) * 100;
+                let pnlPct = p.type === 'LONG' ? ((currentPrice - p.entry_price) / p.entry_price) * 100 : ((p.entry_price - currentPrice) / p.entry_price) * 100;
                 let healthText = "🟢 Saine";
                 let healthClass = "text-emerald-400";
 
-                // Déclencheur d'alerte si proche du Stop Loss ou Take Profit
-                if(p.type === 'LONG' && currentPrice <= p.sl * 1.01) {
+                if(p.type === 'LONG' && currentPrice <= p.sl_price * 1.01) {
                     healthText = "⚠️ Alerte SL !";
                     healthClass = "text-red-400 font-bold animate-pulse";
                     alertTriggered = true;
-                } else if(p.type === 'LONG' && currentPrice >= p.tp * 0.99) {
+                } else if(p.type === 'LONG' && currentPrice >= p.tp_price * 0.99) {
                     healthText = "🎯 Objectif TP !";
                     healthClass = "text-cyan-400 font-bold animate-pulse";
                     alertTriggered = true;
@@ -486,14 +514,14 @@
 
                 return `
                     <tr class="hover:bg-slate-900/60 transition">
-                        <td class="p-4 font-bold text-white uppercase">${escapeHtml(p.sym)}</td>
+                        <td class="p-4 font-bold text-white uppercase">${escapeHtml(p.symbol)}</td>
                         <td class="p-4"><span class="px-2 py-1 rounded text-[10px] font-bold ${p.type==='LONG'?'bg-emerald-500/20 text-emerald-400':'bg-red-500/20 text-red-400'}">${escapeHtml(p.type)}</span></td>
-                        <td class="p-4 font-mono">$${p.entry}</td>
+                        <td class="p-4 font-mono">$${p.entry_price}</td>
                         <td class="p-4 font-mono font-bold text-white">$${currentPrice}</td>
-                        <td class="p-4 font-mono text-[11px]">TP: $${p.tp}<br>SL: $${p.sl}</td>
+                        <td class="p-4 font-mono text-[11px]">TP: $${p.tp_price}<br>SL: $${p.sl_price}</td>
                         <td class="p-4 font-mono ${pnlPct>=0?'text-emerald-400':'text-red-400'}">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</td>
                         <td class="p-4 ${healthClass}">${healthText}</td>
-                        <td class="p-4 text-center"><button onclick="removeLivePosition(${p.id})" class="px-2.5 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg">Clôturer</button></td>
+                        <td class="p-4 text-center"><button onclick="removeCloudPosition(${p.id})" class="px-2.5 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg">Clôturer</button></td>
                     </tr>
                 `;
             }).join('');
@@ -679,7 +707,7 @@
             input.value = "";
             chatBox.scrollTop = chatBox.scrollHeight;
             setTimeout(() => {
-                chatBox.innerHTML += `<div class="flex items-start space-x-3"><div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">🤖</div><div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl text-slate-200">Analyse Gemini Pro : Ton message "${text}object:image{}elire la tendance globale.</div></div>`;
+                chatBox.innerHTML += `<div class="flex items-start space-x-3"><div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">🤖</div><div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl text-slate-200">Analyse Gemini Pro : Ton message "${text}" permet d'analyser les flux globaux du marché.</div></div>`;
                 chatBox.scrollTop = chatBox.scrollHeight;
             }, 900);
         }
