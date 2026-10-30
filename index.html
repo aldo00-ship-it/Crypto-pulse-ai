@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Pulse AI Terminal Pro - Cloud Edition</title>
+    <title>Crypto Pulse AI Terminal Pro - Real-Time V17</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- TradingView Widget Script -->
@@ -29,7 +29,7 @@
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 max-w-md w-full shadow-2xl space-y-6">
             <div class="text-center space-y-2">
                 <div class="inline-block p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-emerald-400 text-2xl font-bold mb-2">🛡️</div>
-                <h2 class="text-2xl font-extrabold text-white tracking-tight">Accès Privé Cloud</h2>
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Accès Privé Cloud V17</h2>
                 <p class="text-sm text-slate-400">Entrez votre e-mail autorisé pour accéder à l'application.</p>
             </div>
             
@@ -55,11 +55,14 @@
                     <div class="p-1.5 bg-gradient-to-tr from-emerald-500 to-cyan-500 rounded-lg text-slate-950 font-black text-sm">⚡</div>
                     <div>
                         <h1 class="text-sm font-black tracking-wider bg-gradient-to-r from-emerald-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                            CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full">CLOUD V16</span>
+                            CRYPTO PULSE AI <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded-full">RT V17</span>
                         </h1>
                     </div>
                 </div>
-                <button onclick="handleSignOut()" class="text-[11px] text-slate-400 hover:text-red-400 border border-slate-800 px-2.5 py-1.5 rounded-lg transition">Déconnexion</button>
+                <div class="flex items-center space-x-3">
+                    <span id="ws-status" class="text-[10px] bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-1 rounded-full font-bold">WS Déconnecté</span>
+                    <button onclick="handleSignOut()" class="text-[11px] text-slate-400 hover:text-red-400 border border-slate-800 px-2.5 py-1.5 rounded-lg transition">Déconnexion</button>
+                </div>
             </div>
 
             <!-- NAVIGATION ROULANTE -->
@@ -106,7 +109,7 @@
                             <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase font-semibold">
                                 <tr>
                                     <th class="p-4"># / Token</th>
-                                    <th class="p-4">Prix (USD)</th>
+                                    <th class="p-4">Prix (USD) RT</th>
                                     <th class="p-4">24h Change</th>
                                     <th class="p-4">Volume 24h</th>
                                     <th class="p-4">Market Cap</th>
@@ -165,10 +168,13 @@
             <section id="tab-live-tracking" class="space-y-4 hidden">
                 <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
                     <div class="flex justify-between items-center flex-wrap gap-2">
-                        <h2 class="text-xl font-bold text-white">🔔 Suivi Live Cloud (Synchronisé)</h2>
-                        <div class="flex items-center space-x-2 bg-slate-950 px-3 py-2 rounded-xl border border-slate-800 text-xs">
-                            <span>🔊 Alarme :</span>
-                            <input type="checkbox" id="audio-alarm-toggle" checked class="accent-emerald-500 w-4 h-4">
+                        <h2 class="text-xl font-bold text-white">🔔 Suivi Live Cloud & WebSockets Temps Réel</h2>
+                        <div class="flex items-center space-x-3">
+                            <button onclick="requestNotificationPermission()" class="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-xl text-xs font-bold">Activer Notifications Push</button>
+                            <div class="flex items-center space-x-2 bg-slate-950 px-3 py-2 rounded-xl border border-slate-800 text-xs">
+                                <span>🔊 Alarme Bim :</span>
+                                <input type="checkbox" id="audio-alarm-toggle" checked class="accent-emerald-500 w-4 h-4">
+                            </div>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
@@ -190,7 +196,7 @@
                                 <th class="p-4">Position</th>
                                 <th class="p-4">Type</th>
                                 <th class="p-4">Entrée</th>
-                                <th class="p-4">Prix Actuel Live</th>
+                                <th class="p-4">Prix Actuel WS</th>
                                 <th class="p-4">TP / SL</th>
                                 <th class="p-4">PnL Live</th>
                                 <th class="p-4 text-center">Action</th>
@@ -228,16 +234,12 @@
         </main>
     </div>
 
-    <!-- JAVASCRIPT LOGIC V16 SUPABASE -->
+    <!-- JAVASCRIPT LOGIC V17 WEBSOCKETS & PUSH -->
     <script>
-        // =========================================================================
-        // 🔑 CONFIGURATION SUPABASE (Intégrée avec tes vraies clés)
-        // =========================================================================
         const SUPABASE_URL = "https://qiggqcqmaorbpugxmmga.supabase.co";
         const SUPABASE_ANON_KEY = "Sb_publishable_A0JrgbkCxzpZvQG3htKuPA_WJM48MsV";
 
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
         const BASE_WHITELIST = ["segodonald00@gmail.com", "email.de.ton.ami@gmail.com"];
 
         function escapeHtml(str) {
@@ -245,8 +247,10 @@
         }
 
         let globalCryptos = [];
+        let livePrices = {};
         let cloudPositions = [];
-        let currentUserEmail = localStorage.getItem('crypto_auth_email') || "";
+        let currentUserEmail = localStorage.getItem('crypto_auth_email'] || "";
+        let ws;
 
         window.addEventListener('DOMContentLoaded', () => {
             if(currentUserEmail && BASE_WHITELIST.map(e => e.toLowerCase()).includes(currentUserEmail.trim().toLowerCase())) {
@@ -254,11 +258,41 @@
                 loadCloudPositions();
             }
             loadTopCryptos();
+            initBinanceWebSocket();
             initTradingViewWidget("BINANCE:BTCUSDT");
             loadExhaustiveNews();
-            
-            setInterval(loadTopCryptos, 15000);
         });
+
+        function requestNotificationPermission() {
+            if("Notification" in window) {
+                Notification.requestPermission().then(permission => {
+                    if(permission === "granted") alert("Notifications push activées avec succès !");
+                });
+            }
+        }
+
+        function triggerBimBimAlarm(symbol, message) {
+            if(document.getElementById('audio-alarm-toggle').checked) {
+                try {
+                    let ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    let osc = ctx.createOscillator();
+                    let gain = ctx.createGain();
+                    osc.type = "sine";
+                    osc.frequency.setValueAtTime(880, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                } catch(e) {}
+            }
+            if("vibrate" in navigator) {
+                navigator.vibrate([200, 100, 200, 100, 400]);
+            }
+            if("Notification" in window && Notification.permission === "granted") {
+                new Notification(`🚨 Alerte Crypto Pulse : ${symbol}`, { body: message });
+            }
+        }
 
         function handleWhitelistLogin() {
             const emailInput = document.getElementById('auth-email-input');
@@ -278,7 +312,7 @@
 
         function handleSignOut() {
             localStorage.removeItem('crypto_auth_email');
-            document.getElementById('auth-modal').classList.add('hidden');
+            document.getElementById('auth-modal').classList.remove('hidden');
         }
 
         function switchTab(tabId) {
@@ -296,12 +330,45 @@
             if(tabId === 'pepites') renderDynamicPepites();
         }
 
+        // =========================================================================
+        // ⚡ BINANCE WEBSOCKETS EN TEMPS RÉEL (PRIX MILLISECONDE)
+        // =========================================================================
+        function initBinanceWebSocket() {
+            const streams = "btcusdt@ticker/ethusdt@ticker/solusdt@ticker/xrpusdt@ticker/adausdt@ticker/dogeusdt@ticker/avaxusdt@ticker/linkusdt@ticker";
+            ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+
+            ws.onopen = () => {
+                const badge = document.getElementById('ws-status');
+                if(badge) {
+                    badge.textContent = "WS Temps Réel Actif";
+                    badge.className = "text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-full font-bold animate-pulse";
+                }
+            };
+
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                if(message.data) {
+                    const ticker = message.data;
+                    const symbol = ticker.s.replace('USDT', '').toUpperCase();
+                    const price = parseFloat(ticker.c);
+                    livePrices[symbol] = price;
+
+                    // Mise à jour en direct des positions cloud si concernées
+                    checkPositionAlertsAndPnL(symbol, price);
+                }
+            };
+
+            ws.onerror = () => {};
+            ws.onclose = () => {
+                setTimeout(initBinanceWebSocket, 5000); // Reconnexion automatique
+            };
+        }
+
         async function loadTopCryptos() {
             try {
                 const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1');
                 globalCryptos = await res.json();
                 renderTrackerTable();
-                renderCloudPositions();
             } catch(e) {}
         }
 
@@ -344,6 +411,22 @@
             }
         }
 
+        function checkPositionAlertsAndPnL(symbol, currentPrice) {
+            let updated = false;
+            cloudPositions.forEach(p => {
+                if(p.symbol === symbol) {
+                    updated = true;
+                    if(p.tp_price && ((p.type === 'LONG' && currentPrice >= p.tp_price) || (p.type === 'SHORT' && currentPrice <= p.tp_price))) {
+                        triggerBimBimAlarm(p.symbol, `🎯 TAKE PROFIT ATTEINT pour ${p.symbol} à $${currentPrice}!`);
+                    }
+                    if(p.sl_price && ((p.type === 'LONG' && currentPrice <= p.sl_price) || (p.type === 'SHORT' && currentPrice >= p.sl_price))) {
+                        triggerBimBimAlarm(p.symbol, `⚠️ STOP LOSS ATTEINT pour ${p.symbol} à $${currentPrice}!`);
+                    }
+                }
+            });
+            if(updated) renderCloudPositions();
+        }
+
         function renderCloudPositions() {
             const tbody = document.getElementById('live-positions-tbody');
             if(!tbody) return;
@@ -353,8 +436,7 @@
             }
 
             tbody.innerHTML = cloudPositions.map(p => {
-                let found = globalCryptos.find(c => c.symbol.toUpperCase() === p.symbol);
-                let currentPrice = found ? found.current_price : p.entry_price;
+                let currentPrice = livePrices[p.symbol] || p.entry_price;
                 let pnlPct = p.type === 'LONG' ? ((currentPrice - p.entry_price) / p.entry_price) * 100 : ((p.entry_price - currentPrice) / p.entry_price) * 100;
 
                 return `
@@ -362,7 +444,7 @@
                         <td class="p-4 font-bold text-white uppercase">${escapeHtml(p.symbol)}</td>
                         <td class="p-4"><span class="px-2 py-1 rounded text-[10px] font-bold ${p.type==='LONG'?'bg-emerald-500/20 text-emerald-400':'bg-red-500/20 text-red-400'}">${escapeHtml(p.type)}</span></td>
                         <td class="p-4 font-mono">$${p.entry_price}</td>
-                        <td class="p-4 font-mono font-bold text-white">$${currentPrice}</td>
+                        <td class="p-4 font-mono font-bold text-emerald-400">$${currentPrice}</td>
                         <td class="p-4 font-mono text-[11px]">TP: $${p.tp_price}<br>SL: $${p.sl_price}</td>
                         <td class="p-4 font-mono ${pnlPct>=0?'text-emerald-400':'text-red-400'}">${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</td>
                         <td class="p-4 text-center"><button onclick="removeCloudPosition(${p.id})" class="px-2.5 py-1 bg-red-500/10 text-red-400 rounded-lg">Clôturer</button></td>
@@ -374,15 +456,18 @@
         function renderTrackerTable() {
             const tbody = document.getElementById('crypto-table-body');
             if(!tbody || globalCryptos.length === 0) return;
-            tbody.innerHTML = globalCryptos.map(c => `
-                <tr class="hover:bg-slate-900/60">
-                    <td class="p-4 font-bold text-white uppercase">${c.symbol} <span class="text-slate-400 text-xs">${c.name}</span></td>
-                    <td class="p-4 font-mono font-bold">$${Number(c.current_price).toLocaleString()}</td>
-                    <td class="p-4 font-mono ${c.price_change_percentage_24h>=0?'text-emerald-400':'text-red-400'}">${c.price_change_percentage_24h>=0?'+':''}${Number(c.price_change_percentage_24h||0).toFixed(2)}%</td>
-                    <td class="p-4 font-mono text-slate-300">$${Number(c.total_volume||0).toLocaleString()}</td>
-                    <td class="p-4 font-mono text-slate-300">$${Number(c.market_cap||0).toLocaleString()}</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = globalCryptos.map(c => {
+                let rtPrice = livePrices[c.symbol.toUpperCase()] || c.current_price;
+                return `
+                    <tr class="hover:bg-slate-900/60">
+                        <td class="p-4 font-bold text-white uppercase">${c.symbol} <span class="text-slate-400 text-xs">${c.name}</span></td>
+                        <td class="p-4 font-mono font-bold text-emerald-400">$${Number(rtPrice).toLocaleString()}</td>
+                        <td class="p-4 font-mono ${c.price_change_percentage_24h>=0?'text-emerald-400':'text-red-400'}">${c.price_change_percentage_24h>=0?'+':''}${Number(c.price_change_percentage_24h||0).toFixed(2)}%</td>
+                        <td class="p-4 font-mono text-slate-300">$${Number(c.total_volume||0).toLocaleString()}</td>
+                        <td class="p-4 font-mono text-slate-300">$${Number(c.market_cap||0).toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function initTradingViewWidget(symbol) {
@@ -401,7 +486,7 @@
             grid.innerHTML = shuffled.map((c, i) => `
                 <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-2">
                     <h3 class="font-extrabold text-white text-base">${c.name} (${c.symbol.toUpperCase()})</h3>
-                    <div class="font-mono text-xs text-emerald-400">Prix : $${c.current_price}</div>
+                    <div class="font-mono text-xs text-emerald-400">Prix : $${livePrices[c.symbol.toUpperCase()] || c.current_price}</div>
                 </div>
             `).join('');
         }
